@@ -1,10 +1,10 @@
-import { GatewayIntentBits, Partials } from 'discord.js';
-import { LedgerService } from './lib/service/LedgerService.ts';
+import type { GatewayIntentBits, Partials } from 'discord.js';
 import { DiscordService } from './lib/service/discord/DiscordService.ts';
+import { LedgerService } from './lib/service/LedgerService.ts';
+import { TaskService } from './lib/service/TaskService.ts';
 
 export interface NativeServiceProviderOptions {
   ledger: LedgerNativeServiceOptions;
-  kysely: {};
   discord: DiscordNativeServiceOptions;
 }
 
@@ -22,11 +22,9 @@ export interface DiscordNativeServiceOptions {
   partials: Partials[];
 }
 
-/** 
- * Internal Public Services Provider. 
- * 
- * You 
-*/
+/**
+ * Internal Public Services Provider.
+ */
 export class NativeServiceProvider {
   private options: NativeServiceProviderOptions;
 
@@ -40,5 +38,9 @@ export class NativeServiceProvider {
 
   public async getDiscordService(): Promise<DiscordService> {
     return await DiscordService.get(this.options.discord, this);
+  }
+
+  public async getTaskService(): Promise<TaskService> {
+    return await TaskService.get(this);
   }
 }
