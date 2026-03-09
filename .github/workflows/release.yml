@@ -1,0 +1,24 @@
+name: Automatic Release
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+    tags:
+      - 'v*.*.*'
+
+permissions:
+  actions: write
+  attestations: write
+  checks: write
+  contents: write
+  discussions: write
+  id-token: write
+  packages: write
+
+jobs:
+  candidate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
