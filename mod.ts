@@ -6,4 +6,8 @@ export class DiscordDevkit {
   public constructor(options: NativeServiceProviderOptions) {
     this.provider = new NativeServiceProvider(options);
   }
+
+  public getProvider(): NativeServiceProvider {
+    return this.provider;
+  }
 }
