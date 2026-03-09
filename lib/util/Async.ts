@@ -9,13 +9,15 @@ export class Async {
    * @param awaitable - The Promise to be awaited, which may resolve successfully or reject with an error.
    * @returns A Promise that resolves to either the successful result of the awaitable or an object containing error information if the awaitable was rejected.
    */
-  public static async awaitable<T>(_id: string, awaitable: Promise<T>): Promise<
+  public static async awaitable<T>(
+    awaitable: Promise<T> | (() => Promise<T>),
+  ): Promise<
     T | {
       error: true;
       err: Error;
     }
   > {
-    const result = await awaitable.catch((e) => {
+    const result = await (typeof awaitable === 'function' ? awaitable() : awaitable).catch((e) => {
       return {
         error: true,
         err: e as Error,
@@ -33,7 +35,6 @@ export class Async {
    * @returns The successful result with failure count, or the final error with failure count.
    */
   public static async awaitWithRetry<T>(
-    id: string,
     awaitableFactory: () => Promise<T>,
     maxRetries = 1,
   ): Promise<
@@ -49,10 +50,10 @@ export class Async {
     const totalAttempts = Math.max(1, maxRetries);
     let failureCount = 0;
 
-    let result = await this.awaitable(id, awaitableFactory());
+    let result = await this.awaitable(awaitableFactory());
     while (this.isAwaitableException(result) && failureCount < totalAttempts - 1) {
       failureCount += 1;
-      result = await this.awaitable(id, awaitableFactory());
+      result = await this.awaitable(awaitableFactory());
     }
 
     if (this.isAwaitableException(result)) {
@@ -80,7 +81,6 @@ export class Async {
    * @returns An array of successful results, or an error object if any awaitable fails after all retries.
    */
   public static async awaitWithOrderedRetry<T>(
-    id: string,
     awaitableFactories: Array<() => Promise<T>>,
     maxRetries = 1,
   ): Promise<T[] | { error: true; err: Error }> {
@@ -88,13 +88,13 @@ export class Async {
 
     for (let i = 0; i < awaitableFactories.length; i++) {
       const factory = awaitableFactories[i];
-      const result = await this.awaitWithRetry(`${id}[${i}]`, factory, maxRetries);
+      const result = await this.awaitWithRetry(factory, maxRetries);
 
       if (this.isAwaitableException(result)) {
         return {
           error: true,
           err: new Error(
-            `Failed to execute ${id}[${i}] after ${result.failureCount} attempts: ${result.err.message}`,
+            `Failed to execute [${i}] after ${result.failureCount} attempts: ${result.err.message}`,
             { cause: result.err },
           ),
         };
@@ -117,26 +117,5 @@ export class Async {
     err: Error;
   } {
     return (typeof value === 'object' && value !== null && 'error' in value && (value as { error?: boolean }).error === true);
-  }
-
-  /**
-   * Wraps an async callback function and returns a new function that executes the callback and logs any errors that occur, without throwing exceptions. This allows for graceful error handling in asynchronous operations without interrupting the flow of the program.
-   *
-   * Maintains the original types of the arguments passed to the callback, ensuring it is easily typed for usage.
-   *
-   * @param callback - The asynchronous callback function to be wrapped, which may perform any async operations and may throw errors.
-   * @returns - A new function that, when called, executes the original callback and logs any errors that occur without throwing exceptions.
-   */
-  public static bundle<Args extends unknown[]>(
-    id: string,
-    callback: (...args: Args) => Promise<void>,
-  ): (...args: Args) => void {
-    return (...args: Args): void => {
-      new Promise<void>((resolve) => {
-        callback(...args).catch((err) => {
-          // TODO: Error Handling on Failed Bundle? Redesign/Ledger it?
-        }).then(() => resolve());
-      });
-    };
   }
 }

@@ -26,8 +26,7 @@
     "@std/ulid": "jsr:@std/ulid@1.0.0"
   },
   "exports": {
-    ".": "./mod.ts",
-    "./types": "./mod.types.ts"
+    ".": "./mod.types.ts"
   },
   "nodeModulesDir": "none",
   // Compiler Options

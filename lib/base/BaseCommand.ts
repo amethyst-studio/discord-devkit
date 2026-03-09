@@ -1,19 +1,13 @@
 import { ulid } from '@std/ulid';
-import type { AutocompleteInteraction, ChatInputCommandInteraction, InteractionEditReplyOptions, InteractionReplyOptions, InteractionUpdateOptions, MessageComponentInteraction, ModalSubmitInteraction, PermissionResolvable } from 'discord.js';
-import { Async } from '../mod.async.ts';
-import { CommandRegistrationService } from '../service/discord/CommandRegistrationService.ts';
-import { LedgerService } from '../service/ledger/LedgerService.ts';
-import { ResponseBuilder } from '../util/response/ResponseBuilder.ts';
-import type { AutoCompleteResponse } from './module/_internal/InternalInteractionCreateEvent.ts';
-
-const ledger = (await LedgerService.get()).getLedger();
-const crs = await CommandRegistrationService.get();
+import type { APIApplicationCommandOptionChoice, AutocompleteInteraction, ChatInputCommandInteraction, InteractionEditReplyOptions, InteractionReplyOptions, InteractionUpdateOptions, MessageComponentInteraction, ModalSubmitInteraction, PermissionResolvable } from 'discord.js';
+import { NativeServiceProvider } from '../../mod.provider.ts';
+import { Async } from '../util/Async.ts';
+import { ResponseBuilder } from '../util/baked/ResponseBuilder.ts';
 
 /**
  * BaseChatInputCommand is an abstract class that defines the structure and behavior of chat input commands for a Discord bot. It includes properties for the command's name, options, and a unique reference ID. The class also provides methods for creating and retrieving referable states associated with interactions, allowing for state management across different stages of command execution. Concrete implementations of this class must define
  */
 export abstract class BaseChatInputCommand {
-  protected readonly crs = crs;
   public readonly name: string;
   public readonly options: BaseCommandOptions;
   public readonly reference = ulid();
@@ -96,7 +90,6 @@ export abstract class BaseChatInputCommand {
     const record = this.state.get(interaction?.customId ?? '');
     if (!record && required) {
       await Async.awaitable(
-        'BaseChatInputCommand.getReferable/stateNotFound',
         this.respond(
           interaction,
           ResponseBuilder.basic({
@@ -115,7 +108,6 @@ export abstract class BaseChatInputCommand {
     }
     if (record !== undefined && interaction.user.id !== record?.user) {
       const awaitResponse = await Async.awaitable(
-        'BaseChatInputCommand.getReferable/permissionDenied',
         this.respond(
           interaction,
           ResponseBuilder.basic({
@@ -146,17 +138,16 @@ export abstract class BaseChatInputCommand {
 
   public async internal(interaction: ChatInputCommandInteraction | MessageComponentInteraction | ModalSubmitInteraction, cause: Error): Promise<void> {
     const sendInternalException = await Async.awaitable(
-      'BaseChatInputCommand.internalException',
       this.respond(
         interaction,
-        ResponseBuilder.internal({
+        await ResponseBuilder.internal({
           message: 'Please try again later. If this issue persists, please report an issue.',
           cause,
         }),
       ),
     );
     if (Async.isAwaitableException(sendInternalException)) {
-      ledger.severe('Failed to Send Internal Exception Response', {
+      (await NativeServiceProvider.getLedgerService()).getLedger().severe('Failed to Send Internal Exception Response', {
         event: 'BaseChatInputCommand.internalException',
         origin: cause,
         cause: sendInternalException.err,
@@ -190,6 +181,12 @@ export interface ComponentHandler {
 
 export interface ModalHandler {
   modal(interaction: ModalSubmitInteraction): Promise<void>;
+}
+
+export interface AutoCompleteResponse {
+  results: APIApplicationCommandOptionChoice[];
+  perPage?: number;
+  allowEmptySearch?: boolean;
 }
 
 export interface AutoCompleteHandler {

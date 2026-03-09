@@ -1,5 +1,5 @@
 import { Client, GatewayIntentBits, Partials, Routes } from 'discord.js';
-import { DiscordNativeServiceOptions, NativeServiceProvider } from '../../../mod.provider.ts';
+import { type DiscordNativeServiceOptions, NativeServiceProvider } from '../../../mod.provider.ts';
 import { BaseService } from '../../base/BaseService.ts';
 import { Async } from '../../util/Async.ts';
 import { CommandRegistrationService } from './CommandRegistrationService.ts';
@@ -11,7 +11,6 @@ const _crs = await CommandRegistrationService.get();
  */
 export class DiscordService extends BaseService {
   private options: DiscordNativeServiceOptions;
-  private provider: NativeServiceProvider;
   public crs: CommandRegistrationService = _crs;
 
   private client: Client;
@@ -19,10 +18,9 @@ export class DiscordService extends BaseService {
   /**
    * Initialize the DiscordService by creating a new Discord client with the necessary intents and partials.
    */
-  protected constructor(options: DiscordNativeServiceOptions, provider: NativeServiceProvider) {
+  protected constructor(options: DiscordNativeServiceOptions) {
     super();
     this.options = options;
-    this.provider = provider;
 
     this.client = new Client({
       intents: [
@@ -51,30 +49,39 @@ export class DiscordService extends BaseService {
   /**
    * Get the singleton instance with constructor parameters.
    */
-  public static override get(options: DiscordNativeServiceOptions, provider: NativeServiceProvider): Promise<DiscordService> {
-    return super.get(options, provider) as Promise<DiscordService>;
+  public static override get(options: DiscordNativeServiceOptions): Promise<DiscordService> {
+    return super.get(options) as Promise<DiscordService>;
   }
 
   /**
    * Initialize the DiscordService by setting up event listeners for the Discord client. The primary event listener is for the ClientReady event, which indicates that the client has successfully connected to Discord. When this event is triggered, the service logs the connection details using the LedgerService and registers all guild and global commands using the CommandRegistrationService. This ensures that the bot's commands are available immediately after connecting to Discord.
    */
   protected override async initialize(): Promise<void> {
-    const ledger = (await this.provider.getLedgerService()).getLedger();
+    const ledger = (await NativeServiceProvider.getLedgerService()).getLedger();
 
     this.client.once(
       'clientReady',
-      Async.bundle('', async (session) => {
-        ledger.information('Client Connected', {
-          service: 'DiscordService',
-          userId: session.user.id,
-          tag: session.user.tag,
+      (session) => {
+        const awaitable = Async.awaitable(async () => {
+          ledger.information('Client Connected', {
+            service: 'DiscordService',
+            userId: session.user.id,
+            tag: session.user.tag,
+          });
+
+          await this.client.rest.put(Routes.applicationCommands(this.client.user!.id), { body: [...this.crs.getAllGlobalBase().map((v) => v.toJSON())] });
+          for (const guild of session.guilds.cache.values()) {
+            await guild.commands.set([...this.crs.getAllGuildBase().map((v) => v.toJSON())]);
+          }
         });
 
-        void await this.client.rest.put(Routes.applicationCommands(this.client.user!.id), { body: [...this.crs.getAllGlobalBase().map((v) => v.toJSON())] });
-        for (const guild of session.guilds.cache.values()) {
-          void await guild.commands.set([...this.crs.getAllGuildBase().map((v) => v.toJSON())]);
+        if (Async.isAwaitableException(awaitable)) {
+          ledger.severe('Client Ready Handler Failed', {
+            service: 'DiscordService',
+            error: awaitable.err,
+          });
         }
-      }),
+      },
     );
   }
 

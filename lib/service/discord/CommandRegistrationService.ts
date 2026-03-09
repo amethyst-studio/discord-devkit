@@ -23,12 +23,12 @@ export class CommandRegistrationService extends BaseService {
   protected override async initialize(): Promise<void> {
   }
 
-    /**
-     * Get the singleton instance with constructor parameters.
-     */
-    public static override get(): Promise<CommandRegistrationService> {
-      return super.get() as Promise<CommandRegistrationService>;
-    }
+  /**
+   * Get the singleton instance with constructor parameters.
+   */
+  public static override get(): Promise<CommandRegistrationService> {
+    return super.get() as Promise<CommandRegistrationService>;
+  }
 
   /**
    * Hook a BaseChatInputCommand into the CommandRegistrationService, allowing it to be registered and retrieved by name or reference. This method takes a BaseChatInputCommand instance and stores it in internal maps for easy access during command registration and execution. By hooking commands into the service, they can be automatically registered with Discord when the client is ready, ensuring that all commands are available for use without requiring manual registration in multiple places.

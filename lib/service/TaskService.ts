@@ -1,28 +1,20 @@
 import { ulid } from '@std/ulid';
 import { CronJob } from 'cron';
-import type { NativeServiceProvider } from '../../mod.provider.ts';
+import { NativeServiceProvider } from '../../mod.provider.ts';
 import { BaseService } from '../base/BaseService.ts';
 
 export class TaskService extends BaseService {
-  private provider: NativeServiceProvider;
-
   private tasks: Map<string, {
     name: string;
     job: CronJob;
   }> = new Map();
   private taskLastExecuted: Map<string, number> = new Map();
 
-  /**  */
-  protected constructor(provider: NativeServiceProvider) {
-    super();
-    this.provider = provider;
-  }
-
   /**
    * Get the singleton instance with constructor parameters.
    */
-  public static override get(provider: NativeServiceProvider): Promise<TaskService> {
-    return super.get(provider) as Promise<TaskService>;
+  public static override get(): Promise<TaskService> {
+    return super.get() as Promise<TaskService>;
   }
 
   /**
@@ -37,7 +29,7 @@ export class TaskService extends BaseService {
         const timeSinceLastExecution = Math.abs(lastExecution - Date.now());
         const expectedTimeSinceLastExecution = Math.abs((task.job.lastDate()?.getTime() ?? 0) - task.job.nextDate().toMillis());
         if (timeSinceLastExecution > expectedTimeSinceLastExecution * 5) {
-          (await this.provider.getLedgerService()).getLedger().warning('Task Watchdog Alert', {
+          (await NativeServiceProvider.getLedgerService()).getLedger().warning('Task Watchdog Alert', {
             id,
             name: task.name,
             reason: 'Task has not heartbeat within the expected adjusted timeframe.',
@@ -66,7 +58,7 @@ export class TaskService extends BaseService {
       job: CronJob.from({
         cronTime,
         onTick: async () => {
-          if (!(await this.provider.getDiscordService()).getDiscord().isReady()) {
+          if (!(await NativeServiceProvider.getDiscordService()).getDiscord().isReady()) {
             return;
           }
           await callback();
@@ -77,7 +69,7 @@ export class TaskService extends BaseService {
         errorHandler: this.capture(`${name}-${taskId}`),
       }),
     });
-    (await this.provider.getLedgerService()).getLedger().information('TaskService:Register', {
+    (await NativeServiceProvider.getLedgerService()).getLedger().information('TaskService:Register', {
       id: taskId,
       name,
       cronTime,
@@ -93,7 +85,7 @@ export class TaskService extends BaseService {
    */
   private capture(taskId: string): (err: unknown) => void {
     return async (err: unknown) => {
-      (await this.provider.getLedgerService()).getLedger().warning('Task Error Handler Invoked', {
+      (await NativeServiceProvider.getLedgerService()).getLedger().warning('Task Error Handler Invoked', {
         service: 'TaskService',
         taskId: taskId,
         error: err,

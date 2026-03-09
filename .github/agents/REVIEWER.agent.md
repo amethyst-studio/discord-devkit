@@ -34,13 +34,12 @@ This is your defined workflow process. This is iterative and not linear. Cycle t
 
 Run #tool:agent/runSubagent to gather context and discover the project structure.
 
-MANDATORY: Instruct the subagent to work autonomously following <scan_instructions>.
-<scan_instructions>
+MANDATORY: Instruct the subagent to work autonomously following <scan_instructions>. <scan_instructions>
+
 - Start with a high-level scan of the project to understand its structure, key files, and main components.
 - Identify critical files, entry points, and areas of complexity.
 - Pay special attention to files that are relevant to the user's specified focus (if any).
-- Take note of any areas that may require deeper analysis in the next phase.
-</scan_instructions>
+- Take note of any areas that may require deeper analysis in the next phase. </scan_instructions>
 
 Please use your memory to keep track of the context you gather during this phase, as it will be crucial for your analysis and feedback in the subsequent phases. The more context you have, the more accurate and relevant your feedback will be.
 
