@@ -10,7 +10,7 @@ import { ResponseBuilder } from '../util/baked/ResponseBuilder.ts';
 export abstract class BaseChatInputCommand {
   public readonly name: string;
   public readonly options: BaseCommandOptions;
-  public readonly reference = ulid();
+  public readonly reference: string = ulid();
 
   private readonly state: Map<string, {
     user: string;
