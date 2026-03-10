@@ -1,12 +1,12 @@
 import { NativeServiceProvider, type NativeServiceProviderOptions } from './mod.provider.ts';
 
 export class DiscordDevkit {
-  public constructor(options: {
+  public static async initialize(options: {
     nativeServiceProviderOptions: NativeServiceProviderOptions;
     nativeBranding: DiscordDevkitNativeBrandingOptions;
-  }) {
+  }): Promise<void> {
     // Register Providers
-    NativeServiceProvider.configure(options.nativeServiceProviderOptions);
+    await NativeServiceProvider.configure(options.nativeServiceProviderOptions);
 
     // Setup Strong/Depending Helpers
     DiscordDevkitNativeBranding.set(options.nativeBranding);
