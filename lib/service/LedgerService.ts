@@ -36,7 +36,7 @@ export class LedgerService extends BaseService {
    */
   protected override async initialize(): Promise<void> {
     this.ledger.register<ConsoleHandlerOptions>({
-      definition: 'ledger/console-handler',
+      definition: 'jsr:@ledger/console-handler@0.2.4',
       level: Level.TRACE,
       colors: true,
     });

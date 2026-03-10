@@ -1,4 +1,4 @@
-import { Client, GatewayIntentBits, Partials, Routes } from 'discord.js';
+import { Client, Routes } from 'discord.js';
 import { type DiscordNativeServiceOptions, NativeServiceProvider } from '../../../mod.provider.ts';
 import { BaseService } from '../../base/BaseService.ts';
 import { Async } from '../../util/Async.ts';
@@ -24,25 +24,9 @@ export class DiscordService extends BaseService {
 
     this.client = new Client({
       intents: [
-        GatewayIntentBits.Guilds
-        | GatewayIntentBits.GuildModeration
-        | GatewayIntentBits.AutoModerationExecution
-        | GatewayIntentBits.GuildMembers
-        | GatewayIntentBits.GuildIntegrations
-        | GatewayIntentBits.GuildWebhooks
-        | GatewayIntentBits.GuildMessages
-        | GatewayIntentBits.MessageContent
-        | GatewayIntentBits.DirectMessages
-        | GatewayIntentBits.GuildMessageReactions
-        | GatewayIntentBits.DirectMessageReactions,
+        options.intents,
       ],
-      partials: [
-        Partials.User,
-        Partials.GuildMember,
-        Partials.Channel,
-        Partials.Message,
-        Partials.Reaction,
-      ],
+      partials: options.partials,
     });
   }
 
