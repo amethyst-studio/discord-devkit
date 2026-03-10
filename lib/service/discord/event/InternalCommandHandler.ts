@@ -1,9 +1,9 @@
+import { Permissions } from '@amethyst/discord-devkit';
 import uFuzzy from '@ufuzzy';
 import type { APIApplicationCommandOptionChoice, GuildTextBasedChannel } from 'discord.js';
 import { NativeServiceProvider } from '../../../../mod.provider.ts';
 import { isAutoCompleteHandler, isComponentHandler, isModalHandler } from '../../../base/BaseCommand.ts';
 import { Async } from '../../../util/Async.ts';
-import { hasRequiredPermissions } from '../../../util/baked/flow/Permissions.ts';
 import { ResponseBuilder } from '../../../util/baked/flow/ResponseBuilder.ts';
 
 export class InternalCommandHandler {
@@ -82,7 +82,7 @@ export class InternalCommandHandler {
 
               // Invoker Permission Check
               if (
-                !(await hasRequiredPermissions({
+                !(await Permissions.hasRequiredPermissions({
                   interaction,
                   channel: interaction.channel as GuildTextBasedChannel,
                   userGuildPermissions: registered.options.userPermissions ?? [],

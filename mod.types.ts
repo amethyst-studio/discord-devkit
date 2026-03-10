@@ -1,5 +1,5 @@
 import { ulid } from '@std/ulid';
-import { AutoCompleteHandler, AutoCompleteResponse, BaseChatInputCommand, ComponentHandler, ModalHandler } from './lib/base/BaseCommand.ts';
+import { type AutoCompleteHandler, type AutoCompleteResponse, BaseChatInputCommand, type ComponentHandler, type ModalHandler } from './lib/base/BaseCommand.ts';
 import { BaseService } from './lib/base/BaseService.ts';
 import { CRSMode } from './lib/service/discord/CommandRegistrationService.ts';
 import { Async } from './lib/util/Async.ts';
