@@ -2,7 +2,7 @@ import { ulid } from '@std/ulid';
 import type { APIApplicationCommandOptionChoice, AutocompleteInteraction, ChatInputCommandInteraction, InteractionEditReplyOptions, InteractionReplyOptions, InteractionUpdateOptions, MessageComponentInteraction, ModalSubmitInteraction, PermissionResolvable } from 'discord.js';
 import { NativeServiceProvider } from '../../mod.provider.ts';
 import { Async } from '../util/Async.ts';
-import { ResponseBuilder } from '../util/baked/ResponseBuilder.ts';
+import { ResponseBuilder } from '../util/baked/flow/ResponseBuilder.ts';
 
 /**
  * BaseChatInputCommand is an abstract class that defines the structure and behavior of chat input commands for a Discord bot. It includes properties for the command's name, options, and a unique reference ID. The class also provides methods for creating and retrieving referable states associated with interactions, allowing for state management across different stages of command execution. Concrete implementations of this class must define
