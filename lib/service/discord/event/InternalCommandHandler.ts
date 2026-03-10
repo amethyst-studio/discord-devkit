@@ -7,9 +7,10 @@ import { hasRequiredPermissions } from '../../../util/baked/flow/Permissions.ts'
 import { ResponseBuilder } from '../../../util/baked/flow/ResponseBuilder.ts';
 
 export class InternalCommandHandler {
+  // deno-lint-ignore require-await
   public static async initialize(): Promise<void> {
-    const ledger = (await NativeServiceProvider.getLedgerService()).getLedger();
-    const discord = await NativeServiceProvider.getDiscordService();
+    const ledger = NativeServiceProvider.getLedgerService().getLedger();
+    const discord = NativeServiceProvider.getDiscordService();
 
     discord.getDiscord().on(
       'interactionCreate',

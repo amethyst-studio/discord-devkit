@@ -132,7 +132,7 @@ export class ResponseBuilder {
     });
   }
 
-  public static async internal(packet: {
+  public static internal(packet: {
     message: string | (string | null)[];
     footer?: {
       hidden?: boolean;
@@ -141,7 +141,7 @@ export class ResponseBuilder {
     };
     cause: Error;
     interaction?: ChatInputCommandInteraction | MessageComponentInteraction | ModalSubmitInteraction;
-  }): Promise<InteractionReplyOptions | InteractionEditReplyOptions | InteractionUpdateOptions> {
+  }): InteractionReplyOptions | InteractionEditReplyOptions | InteractionUpdateOptions {
     const builder = new ContainerBuilder();
 
     // Auto Format Message
@@ -165,7 +165,7 @@ export class ResponseBuilder {
       builder
         .addTextDisplayComponents((b) => b.setContent(`-# **Reference ID**: \`${error.ulid}\``))
         .addSeparatorComponents((b) => b.setSpacing(SeparatorSpacingSize.Small));
-      (await NativeServiceProvider.getLedgerService()).getLedger().warning('Non-fatal Tracked Error from ResponseBuilder InternalException.', {
+      NativeServiceProvider.getLedgerService().getLedger().warning('Non-fatal Tracked Error from ResponseBuilder InternalException.', {
         ulid: error.ulid,
         cause: error,
       });

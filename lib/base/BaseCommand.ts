@@ -147,7 +147,7 @@ export abstract class BaseChatInputCommand {
       ),
     );
     if (Async.isAwaitableException(sendInternalException)) {
-      (await NativeServiceProvider.getLedgerService()).getLedger().severe('Failed to Send Internal Exception Response', {
+      NativeServiceProvider.getLedgerService().getLedger().severe('Failed to Send Internal Exception Response', {
         event: 'BaseChatInputCommand.internalException',
         origin: cause,
         cause: sendInternalException.err,

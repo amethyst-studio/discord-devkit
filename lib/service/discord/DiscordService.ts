@@ -41,8 +41,9 @@ export class DiscordService extends BaseService {
   /**
    * Initialize the DiscordService by setting up event listeners for the Discord client. The primary event listener is for the ClientReady event, which indicates that the client has successfully connected to Discord. When this event is triggered, the service logs the connection details using the LedgerService and registers all guild and global commands using the CommandRegistrationService. This ensures that the bot's commands are available immediately after connecting to Discord.
    */
+  // deno-lint-ignore require-await
   protected override async initialize(): Promise<void> {
-    const ledger = (await NativeServiceProvider.getLedgerService()).getLedger();
+    const ledger = NativeServiceProvider.getLedgerService().getLedger();
 
     InternalCommandHandler.initialize();
 

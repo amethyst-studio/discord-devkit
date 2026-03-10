@@ -22,6 +22,7 @@ export class TaskService extends BaseService {
    */
   // deno-lint-ignore require-await
   protected override async initialize(): Promise<void> {
+    // deno-lint-ignore require-await
     this.register('TaskService:Watchdog', '*/5 * * * * *', async () => {
       for (const id of this.tasks.keys()) {
         const task = this.tasks.get(id)!;
@@ -29,7 +30,7 @@ export class TaskService extends BaseService {
         const timeSinceLastExecution = Math.abs(lastExecution - Date.now());
         const expectedTimeSinceLastExecution = Math.abs((task.job.lastDate()?.getTime() ?? 0) - task.job.nextDate().toMillis());
         if (timeSinceLastExecution > expectedTimeSinceLastExecution * 5) {
-          (await NativeServiceProvider.getLedgerService()).getLedger().warning('Task Watchdog Alert', {
+          NativeServiceProvider.getLedgerService().getLedger().warning('Task Watchdog Alert', {
             id,
             name: task.name,
             reason: 'Task has not heartbeat within the expected adjusted timeframe.',
@@ -50,7 +51,7 @@ export class TaskService extends BaseService {
    * @param callback - An asynchronous function that contains the logic to be executed when the task runs. This function can perform any necessary operations, such as data processing, API calls, or maintenance tasks.
    * @param waitForCompletion - Whether the task should wait for completion before scheduling the next run (default: true).
    */
-  public async register(name: string, cronTime: string, callback: () => Promise<void> | void, waitForCompletion = true): Promise<void> {
+  public register(name: string, cronTime: string, callback: () => Promise<void> | void, waitForCompletion = true): void {
     const taskId = ulid();
     this.taskLastExecuted.set(taskId, Date.now());
     this.tasks.set(taskId, {
@@ -58,7 +59,7 @@ export class TaskService extends BaseService {
       job: CronJob.from({
         cronTime,
         onTick: async () => {
-          if (!(await NativeServiceProvider.getDiscordService()).getDiscord().isReady()) {
+          if (!NativeServiceProvider.getDiscordService().getDiscord().isReady()) {
             return;
           }
           await callback();
@@ -69,7 +70,7 @@ export class TaskService extends BaseService {
         errorHandler: this.capture(`${name}-${taskId}`),
       }),
     });
-    (await NativeServiceProvider.getLedgerService()).getLedger().information('TaskService:Register', {
+    NativeServiceProvider.getLedgerService().getLedger().information('TaskService:Register', {
       id: taskId,
       name,
       cronTime,
@@ -84,8 +85,8 @@ export class TaskService extends BaseService {
    * @returns - A function that takes an error object and logs it using the LedgerService with a warning level, including details about the task and the error that occurred.
    */
   private capture(taskId: string): (err: unknown) => void {
-    return async (err: unknown) => {
-      (await NativeServiceProvider.getLedgerService()).getLedger().warning('Task Error Handler Invoked', {
+    return (err: unknown) => {
+      NativeServiceProvider.getLedgerService().getLedger().warning('Task Error Handler Invoked', {
         service: 'TaskService',
         taskId: taskId,
         error: err,

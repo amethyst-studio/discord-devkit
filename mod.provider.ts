@@ -34,24 +34,41 @@ type ServiceClass<TService extends BaseService = BaseService> = {
 export class NativeServiceProvider {
   private static options?: NativeServiceProviderOptions;
   private static readonly providers = new Map<ServiceClass, BaseService>();
+  private static configurePromise?: Promise<void>;
 
-  public static configure(options: NativeServiceProviderOptions): void {
-    if (!this.options) {
-      this.options = options;
+  public static async configure(options: NativeServiceProviderOptions): Promise<void> {
+    if (this.configurePromise) {
+      if (JSON.stringify(this.options) !== JSON.stringify(options)) {
+        throw new Error('NativeServiceProvider is already configured with different options.');
+      }
+      await this.configurePromise;
       return;
     }
 
-    // Keep a single immutable global config once initialized.
-    if (JSON.stringify(this.options) !== JSON.stringify(options)) {
-      throw new Error('NativeServiceProvider is already configured with different options.');
-    }
-  }
+    this.configurePromise = (async () => {
+      if (!this.options) {
+        this.options = options;
+      }
 
-  private static getOptions(): NativeServiceProviderOptions {
-    if (!this.options) {
-      throw new Error('NativeServiceProvider is not configured.');
-    }
-    return this.options;
+      // Keep a single immutable global config once initialized.
+      if (JSON.stringify(this.options) !== JSON.stringify(options)) {
+        throw new Error('NativeServiceProvider is already configured with different options.');
+      }
+
+      if (!this.hasProvider(LedgerService)) {
+        this.setProvider(LedgerService, await LedgerService.get(this.options.ledger));
+      }
+
+      if (!this.hasProvider(DiscordService)) {
+        this.setProvider(DiscordService, await DiscordService.get(this.options.discord));
+      }
+
+      if (!this.hasProvider(TaskService)) {
+        this.setProvider(TaskService, await TaskService.get());
+      }
+    })();
+
+    await this.configurePromise;
   }
 
   public static setProvider<TService extends BaseService>(serviceClass: ServiceClass<TService>, provider: TService): TService {
@@ -74,29 +91,15 @@ export class NativeServiceProvider {
     return this.providers.has(serviceClass);
   }
 
-  public static async getLedgerService(): Promise<LedgerService> {
-    const options = this.getOptions();
-    if (!this.hasProvider(LedgerService)) {
-      const provider = await LedgerService.get(options.ledger);
-      this.setProvider(LedgerService, provider);
-    }
+  public static getLedgerService(): LedgerService {
     return this.getProvider(LedgerService);
   }
 
-  public static async getDiscordService(): Promise<DiscordService> {
-    const options = this.getOptions();
-    if (!this.hasProvider(DiscordService)) {
-      const service = await DiscordService.get(options.discord);
-      this.setProvider(DiscordService, service);
-    }
+  public static getDiscordService(): DiscordService {
     return this.getProvider(DiscordService);
   }
 
-  public static async getTaskService(): Promise<TaskService> {
-    if (!this.hasProvider(TaskService)) {
-      const service = await TaskService.get();
-      this.setProvider(TaskService, service);
-    }
+  public static getTaskService(): TaskService {
     return this.getProvider(TaskService);
   }
 }

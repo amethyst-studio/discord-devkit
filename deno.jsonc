@@ -1,6 +1,6 @@
 {
   "name": "@amethyst/discord-devkit",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "license": "MIT",
   // Imports
   "imports": {
@@ -9,10 +9,6 @@
     "discord.js/builders": "npm:@discordjs/builders@dev",
     "zlib-sync": "npm:zlib-sync",
     "bufferutil": "npm:bufferutil",
-    // Kysely
-    "kysely": "npm:kysely@latest",
-    "mysql2": "npm:mysql2@latest",
-    "pg": "npm:pg@latest",
     // Libraries
     "ledger": "jsr:@ledger/ledger@0.3.7",
     "ledger/console-handler": "jsr:@ledger/console-handler@0.2.4",
