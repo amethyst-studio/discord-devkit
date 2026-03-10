@@ -3,7 +3,6 @@ import { type DiscordNativeServiceOptions, NativeServiceProvider } from '../../.
 import { BaseService } from '../../base/BaseService.ts';
 import { Async } from '../../util/Async.ts';
 import { CommandRegistrationService } from './CommandRegistrationService.ts';
-import { InternalCommandHandler } from './event/InternalCommandHandler.ts';
 
 const _crs = await CommandRegistrationService.get();
 
@@ -45,8 +44,7 @@ export class DiscordService extends BaseService {
   protected override async initialize(): Promise<void> {
     const ledger = NativeServiceProvider.getLedgerService().getLedger();
 
-    InternalCommandHandler.initialize();
-
+    // Internal Ready Event
     this.client.once(
       'clientReady',
       (session) => {
