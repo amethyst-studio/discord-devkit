@@ -41,7 +41,7 @@ export class LedgerService extends BaseService {
       colors: true,
     });
     this.ledger.register<DiscordWebhookOptions>({
-      definition: 'ledger/discord-slack-handler',
+      definition: 'jsr:@ledger/discord-slack-handler@0.1.4',
       level: Level.SEVERE,
       platform: 'discord',
       discordAccentMessage: this.options.discordAccentMessage,
