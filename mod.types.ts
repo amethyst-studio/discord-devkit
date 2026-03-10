@@ -1,5 +1,5 @@
 import { ulid } from '@std/ulid';
-import { BaseChatInputCommand } from './lib/base/BaseCommand.ts';
+import { AutoCompleteHandler, AutoCompleteResponse, BaseChatInputCommand, ComponentHandler, ModalHandler } from './lib/base/BaseCommand.ts';
 import { BaseService } from './lib/base/BaseService.ts';
 import { CRSMode } from './lib/service/discord/CommandRegistrationService.ts';
 import { Async } from './lib/util/Async.ts';
@@ -10,4 +10,4 @@ import { NativeServiceProvider, type NativeServiceProviderOptions } from './mod.
 import { DiscordDevkit, type DiscordDevkitNativeBrandingOptions } from './mod.ts';
 
 export { Async, BaseChatInputCommand, BaseService, CRSMode, DiscordDevkit, Emote, InternalException, NativeServiceProvider, ResponseBuilder, ulid };
-export type { DiscordDevkitNativeBrandingOptions, NativeServiceProviderOptions };
+export type { AutoCompleteHandler, AutoCompleteResponse, ComponentHandler, DiscordDevkitNativeBrandingOptions, ModalHandler, NativeServiceProviderOptions,  };

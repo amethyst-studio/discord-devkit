@@ -140,7 +140,7 @@ export abstract class BaseChatInputCommand {
     const sendInternalException = await Async.awaitable(
       this.respond(
         interaction,
-        await ResponseBuilder.internal({
+        ResponseBuilder.internal({
           message: 'Please try again later. If this issue persists, please report an issue.',
           cause,
         }),
