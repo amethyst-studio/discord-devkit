@@ -66,6 +66,7 @@ export class DiscordService extends BaseService {
             guildRegistered,
           });
         });
+        console.info(awaitable);
 
         if (Async.isAwaitableException(awaitable)) {
           console.info('awaitable reject?')
