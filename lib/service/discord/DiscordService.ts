@@ -49,16 +49,19 @@ export class DiscordService extends BaseService {
       'clientReady',
       (session) => {
         const awaitable = Async.awaitable(async () => {
+          let guildRegistered = 0;
+          await this.client.rest.put(Routes.applicationCommands(this.client.user!.id), { body: [...this.crs.getAllGlobalBase().map((v) => v.toJSON())] });
+          for (const guild of session.guilds.cache.values()) {
+            const result = await guild.commands.set([...this.crs.getAllGuildBase().map((v) => v.toJSON())]);
+            guildRegistered = result.size;
+          }
+
           ledger.information('Client Connected', {
             service: 'DiscordService',
             userId: session.user.id,
             tag: session.user.tag,
+            guildRegistered,
           });
-
-          await this.client.rest.put(Routes.applicationCommands(this.client.user!.id), { body: [...this.crs.getAllGlobalBase().map((v) => v.toJSON())] });
-          for (const guild of session.guilds.cache.values()) {
-            await guild.commands.set([...this.crs.getAllGuildBase().map((v) => v.toJSON())]);
-          }
         });
 
         if (Async.isAwaitableException(awaitable)) {
