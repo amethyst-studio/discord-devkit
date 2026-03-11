@@ -52,10 +52,13 @@ export class DiscordService extends BaseService {
           let guildRegistered = 0;
           await this.client.rest.put(Routes.applicationCommands(this.client.user!.id), { body: [...this.crs.getAllGlobalBase().map((v) => v.toJSON())] });
           for (const guild of session.guilds.cache.values()) {
+            console.info('dispatch set', guild.id);
             const result = await guild.commands.set([...this.crs.getAllGuildBase().map((v) => v.toJSON())]);
+            console.info('recv set', guild.id, result);
             guildRegistered = result.size;
           }
 
+          console.info('connected?')
           ledger.information('Client Connected', {
             service: 'DiscordService',
             userId: session.user.id,
@@ -65,6 +68,7 @@ export class DiscordService extends BaseService {
         });
 
         if (Async.isAwaitableException(awaitable)) {
+          console.info('awaitable reject?')
           ledger.severe('Client Ready Handler Failed', {
             service: 'DiscordService',
             error: awaitable.err,
