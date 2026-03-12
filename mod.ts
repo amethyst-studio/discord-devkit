@@ -1,3 +1,4 @@
+import { DiscordService } from './lib/service/discord/DiscordService.ts';
 import { InternalCommandHandler } from './lib/service/discord/event/InternalCommandHandler.ts';
 import { NativeServiceProvider, type NativeServiceProviderOptions } from './mod.provider.ts';
 
@@ -12,8 +13,12 @@ export class DiscordDevkit {
     // Setup Strong/Depending Helpers
     DiscordDevkitNativeBranding.set(options.nativeBranding);
 
-    // Register Internal Handler
-    InternalCommandHandler.initialize();
+    // Register Child Handler for Dicord Service
+    if (NativeServiceProvider.hasProvider(DiscordService)) {
+      // Register Internal Handler
+      InternalCommandHandler.initialize();
+    }
+
   }
 }
 
