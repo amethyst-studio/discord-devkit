@@ -5,8 +5,9 @@ import { LedgerService } from './lib/service/LedgerService.ts';
 import { TaskService } from './lib/service/TaskService.ts';
 
 export interface NativeServiceProviderOptions {
-  ledger: LedgerNativeServiceOptions;
-  discord: DiscordNativeServiceOptions;
+  ledger: LedgerNativeServiceOptions | null;
+  discord: DiscordNativeServiceOptions | null;
+  task: true | null;
 }
 
 export interface LedgerNativeServiceOptions {
@@ -34,41 +35,29 @@ type ServiceClass<TService extends BaseService = BaseService> = {
 export class NativeServiceProvider {
   private static options?: NativeServiceProviderOptions;
   private static readonly providers = new Map<ServiceClass, BaseService>();
-  private static configurePromise?: Promise<void>;
 
   public static async configure(options: NativeServiceProviderOptions): Promise<void> {
-    if (this.configurePromise) {
-      if (JSON.stringify(this.options) !== JSON.stringify(options)) {
-        throw new Error('NativeServiceProvider is already configured with different options.');
-      }
-      await this.configurePromise;
-      return;
-    }
-
-    this.configurePromise = (async () => {
-      if (!this.options) {
-        this.options = options;
-      }
-
+    if (this.options) {
       // Keep a single immutable global config once initialized.
       if (JSON.stringify(this.options) !== JSON.stringify(options)) {
         throw new Error('NativeServiceProvider is already configured with different options.');
       }
+      return;
+    }
 
-      if (!this.hasProvider(LedgerService)) {
-        this.setProvider(LedgerService, await LedgerService.get(this.options.ledger));
-      }
+    this.options = options;
 
-      if (!this.hasProvider(DiscordService)) {
-        this.setProvider(DiscordService, await DiscordService.get(this.options.discord));
-      }
+    if (!this.hasProvider(LedgerService) && this.options.ledger !== null) {
+      this.setProvider(LedgerService, await LedgerService.get(this.options.ledger));
+    }
 
-      if (!this.hasProvider(TaskService)) {
-        this.setProvider(TaskService, await TaskService.get());
-      }
-    })();
+    if (!this.hasProvider(DiscordService) && this.options.discord !== null) {
+      this.setProvider(DiscordService, await DiscordService.get(this.options.discord));
+    }
 
-    await this.configurePromise;
+    if (!this.hasProvider(TaskService) && this.options.task !== null) {
+      this.setProvider(TaskService, await TaskService.get());
+    }
   }
 
   public static setProvider<TService extends BaseService>(serviceClass: ServiceClass<TService>, provider: TService): TService {
