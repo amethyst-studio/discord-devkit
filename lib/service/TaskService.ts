@@ -2,6 +2,7 @@ import { ulid } from '@std/ulid';
 import { CronJob } from 'cron';
 import { NativeServiceProvider } from '../../mod.provider.ts';
 import { BaseService } from '../base/BaseService.ts';
+import { DiscordService } from './discord/DiscordService.ts';
 
 export class TaskService extends BaseService {
   private tasks: Map<string, {
@@ -59,7 +60,7 @@ export class TaskService extends BaseService {
       job: CronJob.from({
         cronTime,
         onTick: async () => {
-          if (!NativeServiceProvider.getDiscordService().getDiscord().isReady()) {
+          if (NativeServiceProvider.hasProvider(DiscordService) && !NativeServiceProvider.getDiscordService().getDiscord().isReady()) {
             return;
           }
           await callback();
