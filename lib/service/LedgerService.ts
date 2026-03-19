@@ -56,7 +56,7 @@ export class LedgerService extends BaseService {
   /**
    * Get the Ledger instance.
    */
-  public getLedger(): Ledger {
+  public instance(): Ledger {
     return this.ledger;
   }
 }

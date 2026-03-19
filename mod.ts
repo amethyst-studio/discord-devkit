@@ -1,52 +1,25 @@
+import { BrandingService, type BrandingServiceOptions } from './lib/service/BrandingService.ts';
 import { DiscordService } from './lib/service/discord/DiscordService.ts';
-import { InternalCommandHandler } from './lib/service/discord/event/InternalCommandHandler.ts';
+import { LedgerService } from './lib/service/LedgerService.ts';
+import { CronTaskService } from './lib/service/CronTaskService.ts';
 import { NativeServiceProvider, type NativeServiceProviderOptions } from './mod.provider.ts';
 
 export class DiscordDevkit {
+  public static nsp = NativeServiceProvider.get();
+
   public static async initialize(options: {
     nativeServiceProviderOptions: NativeServiceProviderOptions;
-    nativeBranding: DiscordDevkitNativeBrandingOptions;
+    nativeBranding?: BrandingServiceOptions;
   }): Promise<void> {
-    // Register Providers
-    await NativeServiceProvider.configure(options.nativeServiceProviderOptions);
+    await this.nsp.register(BrandingService, options.nativeBranding ?? {});
+    await this.nsp.register(LedgerService, options.nativeServiceProviderOptions.ledger);
+    await this.nsp.register(CronTaskService);
 
-    // Setup Strong/Depending Helpers
-    DiscordDevkitNativeBranding.set(options.nativeBranding);
-
-    // Register Child Handler for Dicord Service
-    if (NativeServiceProvider.hasProvider(DiscordService)) {
-      // Register Internal Handler
-      InternalCommandHandler.initialize();
-    }
-
-  }
-}
-
-export class DiscordDevkitNativeBranding {
-  public static brand: string = 'Official Companion Bot';
-  public static stub: string = 'Created by <@100737000973275136>.';
-  public static link: string = 'https://github.com/xCykrix';
-  public static ref: string = '';
-
-  public static set(io: DiscordDevkitNativeBrandingOptions): void {
-    if (io.brand) {
-      this.brand = io.brand ?? this.brand;
-    }
-    if (io.stub) {
-      this.stub = io.stub ?? this.stub;
-    }
-    if (io.link) {
-      this.link = io.link ?? this.link;
-    }
-    if (io.ref) {
-      this.ref = io.ref ?? this.ref;
+    if (options.nativeServiceProviderOptions.discord !== null) {
+      await this.nsp.register(DiscordService, options.nativeServiceProviderOptions.discord);
     }
   }
 }
 
-export type DiscordDevkitNativeBrandingOptions = {
-  brand?: string;
-  stub?: string;
-  link?: string;
-  ref?: string;
-};
+export { BrandingService, BrandingService as DiscordDevkitNativeBranding };
+export type { BrandingServiceOptions, BrandingServiceOptions as DiscordDevkitNativeBrandingOptions };

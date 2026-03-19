@@ -1,8 +1,16 @@
 import type { GatewayIntentBits, Partials } from 'discord.js';
 import type { BaseService } from './lib/base/BaseService.ts';
-import { DiscordService } from './lib/service/discord/DiscordService.ts';
-import { LedgerService } from './lib/service/LedgerService.ts';
-import { TaskService } from './lib/service/TaskService.ts';
+
+// Identity type: uses prototype to avoid construct-signature visibility checks.
+type ServiceClass<TService extends BaseService = BaseService> = {
+  readonly prototype: TService;
+  readonly name: string;
+};
+
+// Typed factory used by register() - extends ServiceClass so it's a valid Map key.
+type ServiceFactory<TService extends BaseService, TArgs extends unknown[]> = ServiceClass<TService> & {
+  get(...args: TArgs): Promise<TService>;
+};
 
 export interface NativeServiceProviderOptions {
   ledger: LedgerNativeServiceOptions | null;
@@ -24,71 +32,38 @@ export interface DiscordNativeServiceOptions {
   partials: Partials[];
 }
 
-type ServiceClass<TService extends BaseService = BaseService> = {
-  prototype: TService;
-  name: string;
-};
-
-/**
- * Internal Public Services Provider.
- */
 export class NativeServiceProvider {
-  private static options?: NativeServiceProviderOptions;
-  private static readonly providers = new Map<ServiceClass, BaseService>();
+  private static instance?: NativeServiceProvider;
+  private readonly providers = new Map<ServiceClass, BaseService>();
 
-  public static async configure(options: NativeServiceProviderOptions): Promise<void> {
-    if (this.options) {
-      // Keep a single immutable global config once initialized.
-      if (JSON.stringify(this.options) !== JSON.stringify(options)) {
-        throw new Error('NativeServiceProvider is already configured with different options.');
-      }
-      return;
+  public static get(): NativeServiceProvider {
+    if (!this.instance) {
+      this.instance = new NativeServiceProvider();
     }
-
-    this.options = options;
-
-    if (!this.hasProvider(LedgerService) && this.options.ledger !== null) {
-      this.setProvider(LedgerService, await LedgerService.get(this.options.ledger));
-    }
-
-    if (!this.hasProvider(DiscordService) && this.options.discord !== null) {
-      this.setProvider(DiscordService, await DiscordService.get(this.options.discord));
-    }
-
-    if (!this.hasProvider(TaskService) && this.options.task !== null) {
-      this.setProvider(TaskService, await TaskService.get());
-    }
+    return this.instance as NativeServiceProvider;
   }
 
-  public static setProvider<TService extends BaseService>(serviceClass: ServiceClass<TService>, provider: TService): TService {
+  public async register<TService extends BaseService, TArgs extends unknown[]>(
+    serviceClass: ServiceFactory<TService, TArgs>,
+    ...args: TArgs
+  ): Promise<TService> {
     if (this.providers.has(serviceClass)) {
       throw new Error(`Provider "${serviceClass.name}" is already registered.`);
     }
+    const provider = await serviceClass.get(...args);
     this.providers.set(serviceClass, provider);
     return provider;
   }
 
-  public static getProvider<TService extends BaseService>(serviceClass: ServiceClass<TService>): TService {
+  public hasProvider(serviceClass: ServiceClass): boolean {
+    return this.providers.has(serviceClass);
+  }
+
+  public getProvider<TService extends BaseService>(serviceClass: ServiceClass<TService>): TService {
     const provider = this.providers.get(serviceClass);
     if (!provider) {
       throw new Error(`Provider "${serviceClass.name}" is not registered.`);
     }
     return provider as TService;
-  }
-
-  public static hasProvider(serviceClass: ServiceClass): boolean {
-    return this.providers.has(serviceClass);
-  }
-
-  public static getLedgerService(): LedgerService {
-    return this.getProvider(LedgerService);
-  }
-
-  public static getDiscordService(): DiscordService {
-    return this.getProvider(DiscordService);
-  }
-
-  public static getTaskService(): TaskService {
-    return this.getProvider(TaskService);
   }
 }

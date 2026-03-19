@@ -1,18 +1,18 @@
-import { Permissions } from '@amethyst/discord-devkit';
 import uFuzzy from '@ufuzzy';
 import type { APIApplicationCommandOptionChoice, GuildTextBasedChannel } from 'discord.js';
 import { NativeServiceProvider } from '../../../../mod.provider.ts';
 import { isAutoCompleteHandler, isComponentHandler, isModalHandler } from '../../../base/BaseCommand.ts';
 import { Async } from '../../../util/Async.ts';
 import { ResponseBuilder } from '../../../util/baked/flow/ResponseBuilder.ts';
+import { LedgerService } from '../../LedgerService.ts';
 
 export class InternalCommandHandler {
   // deno-lint-ignore require-await
   public static async initialize(): Promise<void> {
-    const ledger = NativeServiceProvider.getLedgerService().getLedger();
-    const discord = NativeServiceProvider.getDiscordService();
+    const ledger = NativeServiceProvider.get().getProvider(LedgerService).instance();
+    const discord = NativeServiceProvider.get().getProvider(DiscordService).getDiscord();
 
-    discord.getDiscord().on(
+    discord.on(
       'interactionCreate',
       (interaction) => {
         const awaitable = Async.awaitable(async () => {

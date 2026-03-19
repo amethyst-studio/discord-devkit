@@ -1,7 +1,8 @@
 import { type ChatInputCommandInteraction, type InteractionEditReplyOptions, type InteractionReplyOptions, type InteractionUpdateOptions, type MessageComponentInteraction, MessageFlags, type ModalSubmitInteraction, SeparatorSpacingSize } from 'discord.js';
 import { ContainerBuilder } from 'discord.js/builders';
 import { NativeServiceProvider } from '../../../../mod.provider.ts';
-import { DiscordDevkitNativeBranding } from '../../../../mod.ts';
+import { BrandingService, DEFAULT_BRANDING } from '../../../service/BrandingService.ts';
+import { LedgerService } from '../../../service/LedgerService.ts';
 import { InternalException } from '../../InternalException.ts';
 
 export type ResponseBuilderSetupOptions = {
@@ -12,6 +13,8 @@ export type ResponseBuilderSetupOptions = {
 };
 
 export class ResponseBuilder {
+  private static readonly branding = NativeServiceProvider.get().getProvider(BrandingService);
+
   public static basic(packet: {
     title?: string;
     message?: string | (string | null)[];
@@ -77,10 +80,10 @@ export class ResponseBuilder {
         packet.footer.format = packet.footer.format.replace(`{{${key}}}`, value);
       }
       packet.footer.format = packet.footer.format.replace('{{TIMESTAMP}}', `<t:${Math.floor(Date.now() / 1000)}:F>`);
-      packet.footer.format = packet.footer.format.replace('{{INT_BRAND}}', packet?.interaction?.guild?.name ?? DiscordDevkitNativeBranding.brand ?? 'Official Companion Bot');
-      packet.footer.format = packet.footer.format.replace('{{INT_STUB}}', DiscordDevkitNativeBranding.stub ?? 'Created by <@100737000973275136>.');
-      packet.footer.format = packet.footer.format.replace('{{INT_LINK}}', DiscordDevkitNativeBranding.link ?? 'https://github.com/xCykrix');
-      packet.footer.format = packet.footer.format.replace('{{INT_REF}}', DiscordDevkitNativeBranding.ref ?? '');
+      packet.footer.format = packet.footer.format.replace('{{INT_BRAND}}', packet?.interaction?.guild?.name ?? this.branding?.brand ?? DEFAULT_BRANDING.brand);
+      packet.footer.format = packet.footer.format.replace('{{INT_STUB}}', this.branding?.stub ?? DEFAULT_BRANDING.stub);
+      packet.footer.format = packet.footer.format.replace('{{INT_LINK}}', this.branding?.link ?? DEFAULT_BRANDING.link);
+      packet.footer.format = packet.footer.format.replace('{{INT_REF}}', this.branding?.ref ?? DEFAULT_BRANDING.ref);
       builder
         .addTextDisplayComponents((b) => b.setContent(`${(packet.footer!.format as string).split('\n').map((line) => `-# ${line.trim()}`).join('\n')}`));
     }
@@ -165,7 +168,7 @@ export class ResponseBuilder {
       builder
         .addTextDisplayComponents((b) => b.setContent(`-# **Reference ID**: \`${error.ulid}\``))
         .addSeparatorComponents((b) => b.setSpacing(SeparatorSpacingSize.Small));
-      NativeServiceProvider.getLedgerService().getLedger().warning('Non-fatal Tracked Error from ResponseBuilder InternalException.', {
+      NativeServiceProvider.get().getProvider(LedgerService).instance().warning('Non-fatal Tracked Error from ResponseBuilder InternalException.', {
         ulid: error.ulid,
         cause: error,
       });
@@ -187,10 +190,10 @@ export class ResponseBuilder {
         packet.footer.format = packet.footer.format.replace(`{{${key}}}`, value);
       }
       packet.footer.format = packet.footer.format.replace('{{TIMESTAMP}}', `<t:${Math.floor(Date.now() / 1000)}:F>`);
-      packet.footer.format = packet.footer.format.replace('{{INT_BRAND}}', packet?.interaction?.guild?.name ?? DiscordDevkitNativeBranding.brand ?? 'Official Companion Bot');
-      packet.footer.format = packet.footer.format.replace('{{INT_STUB}}', DiscordDevkitNativeBranding.stub ?? 'Created by <@100737000973275136>.');
-      packet.footer.format = packet.footer.format.replace('{{INT_LINK}}', DiscordDevkitNativeBranding.link ?? 'https://github.com/xCykrix');
-      packet.footer.format = packet.footer.format.replace('{{INT_REF}}', DiscordDevkitNativeBranding.ref ?? '');
+      packet.footer.format = packet.footer.format.replace('{{INT_BRAND}}', packet?.interaction?.guild?.name ?? this.branding?.brand ?? DEFAULT_BRANDING.brand);
+      packet.footer.format = packet.footer.format.replace('{{INT_STUB}}', this.branding?.stub ?? DEFAULT_BRANDING.stub);
+      packet.footer.format = packet.footer.format.replace('{{INT_LINK}}', this.branding?.link ?? DEFAULT_BRANDING.link);
+      packet.footer.format = packet.footer.format.replace('{{INT_REF}}', this.branding?.ref ?? DEFAULT_BRANDING.ref);
       builder
         .addTextDisplayComponents((b) => b.setContent(`${(packet.footer!.format as string).split('\n').map((line) => `-# ${line.trim()}`).join('\n')}`));
     }

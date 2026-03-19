@@ -1,3 +1,9 @@
+export type RetryBackoffOptions = {
+  strategy: 'static' | 'exponential';
+  delayMs: number;
+  maxDelayMs?: number;
+};
+
 /**
  * Async Core Module Class. Provides helper functions for handling async operations, such as bundling, wrapping, and error handling.
  */
@@ -29,14 +35,15 @@ export class Async {
   /**
    * Executes an awaitable factory and retries failures up to the provided attempt limit.
    *
-   * @param id - An identifier for logging purposes, to indicate which awaitable is being processed.
    * @param awaitableFactory - A callback that creates the Promise to run for each attempt.
-   * @param maxRetries - Total number of attempts allowed, including the first attempt. Defaults to 3.
+   * @param maxRetries - Total number of attempts allowed, including the first attempt. Defaults to 1.
+   * @param backoff - Optional backoff strategy applied between failed attempts.
    * @returns The successful result with failure count, or the final error with failure count.
    */
   public static async awaitWithRetry<T>(
     awaitableFactory: () => Promise<T>,
-    maxRetries = 1,
+    maxRetries?: number,
+    backoff?: RetryBackoffOptions,
   ): Promise<
     {
       result: T;
@@ -47,12 +54,13 @@ export class Async {
       failureCount: number;
     }
   > {
-    const totalAttempts = Math.max(1, maxRetries);
+    const totalAttempts = Math.max(1, maxRetries ?? 1);
     let failureCount = 0;
 
     let result = await this.awaitable(awaitableFactory());
     while (this.isAwaitableException(result) && failureCount < totalAttempts - 1) {
       failureCount += 1;
+      await this.applyRetryBackoff(backoff, failureCount);
       result = await this.awaitable(awaitableFactory());
     }
 
@@ -75,20 +83,21 @@ export class Async {
    * Only proceeds to the next awaitable after the current one succeeds or exhausts retries.
    * Returns an awaitable exception immediately if any awaitable fails after exhausting all retries.
    *
-   * @param id - An identifier for logging purposes, to indicate which operation is being processed.
    * @param awaitableFactories - An array of callbacks that create Promises to be executed in order.
    * @param maxRetries - Total number of attempts allowed per awaitable, including the first attempt. Defaults to 1.
+   * @param backoff - Optional backoff strategy applied between failed attempts.
    * @returns An array of successful results, or an error object if any awaitable fails after all retries.
    */
   public static async awaitWithOrderedRetry<T>(
     awaitableFactories: Array<() => Promise<T>>,
-    maxRetries = 1,
+    maxRetries?: number,
+    backoff?: RetryBackoffOptions,
   ): Promise<T[] | { error: true; err: Error }> {
     const results: T[] = [];
 
     for (let i = 0; i < awaitableFactories.length; i++) {
       const factory = awaitableFactories[i];
-      const result = await this.awaitWithRetry(factory, maxRetries);
+      const result = await this.awaitWithRetry(factory, maxRetries, backoff);
 
       if (this.isAwaitableException(result)) {
         return {
@@ -117,5 +126,31 @@ export class Async {
     err: Error;
   } {
     return (typeof value === 'object' && value !== null && 'error' in value && (value as { error?: boolean }).error === true);
+  }
+
+  private static async applyRetryBackoff(backoff: RetryBackoffOptions | undefined, retryIndex: number): Promise<void> {
+    if (!backoff) {
+      return;
+    }
+
+    const baseDelay = Math.max(0, backoff.delayMs);
+    let delay = 0;
+
+    if (backoff.strategy === 'static') {
+      delay = baseDelay;
+    }
+    else {
+      delay = baseDelay * (2 ** Math.max(0, retryIndex - 1));
+    }
+
+    if (backoff.maxDelayMs !== undefined) {
+      delay = Math.min(delay, Math.max(0, backoff.maxDelayMs));
+    }
+
+    if (delay <= 0) {
+      return;
+    }
+
+    await new Promise((resolve) => setTimeout(resolve, delay));
   }
 }

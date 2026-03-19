@@ -2,6 +2,7 @@ import { Client, Routes } from 'discord.js';
 import { type DiscordNativeServiceOptions, NativeServiceProvider } from '../../../mod.provider.ts';
 import { BaseService } from '../../base/BaseService.ts';
 import { Async } from '../../util/Async.ts';
+import { LedgerService } from '../LedgerService.ts';
 import { CommandRegistrationService } from './CommandRegistrationService.ts';
 
 const _crs = await CommandRegistrationService.get();
@@ -42,7 +43,7 @@ export class DiscordService extends BaseService {
    */
   // deno-lint-ignore require-await
   protected override async initialize(): Promise<void> {
-    const ledger = NativeServiceProvider.getLedgerService().getLedger();
+    const ledger = NativeServiceProvider.get().getProvider(LedgerService).instance();
 
     // Internal Ready Event
     this.client.once(
