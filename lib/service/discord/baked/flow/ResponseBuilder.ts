@@ -1,9 +1,9 @@
 import { type ChatInputCommandInteraction, type InteractionEditReplyOptions, type InteractionReplyOptions, type InteractionUpdateOptions, type MessageComponentInteraction, MessageFlags, type ModalSubmitInteraction, SeparatorSpacingSize } from 'discord.js';
 import { ContainerBuilder } from 'discord.js/builders';
-import { NativeServiceProvider } from '../../../../mod.provider.ts';
-import { BrandingService, DEFAULT_BRANDING } from '../../../service/BrandingService.ts';
-import { LedgerService } from '../../../service/LedgerService.ts';
-import { InternalException } from '../../InternalException.ts';
+import { InternalException } from '../../../../baked/InternalException.ts';
+import { NativeServiceProvider } from '../../../../provider/provider.ts';
+import { LedgerService } from '../../../LedgerService.ts';
+import { BrandingService, DEFAULT_BRANDING } from '../../BrandingService.ts';
 
 export type ResponseBuilderSetupOptions = {
   brand: string;

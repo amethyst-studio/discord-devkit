@@ -1,7 +1,7 @@
 import { ulid } from '@std/ulid';
 import { CronJob } from 'cron';
-import { NativeServiceProvider } from '../../mod.provider.ts';
-import { BaseService } from '../base/BaseService.ts';
+import { BaseService } from '../provider/base/BaseService.ts';
+import { NativeServiceProvider } from '../provider/provider.ts';
 import { LedgerService } from './LedgerService.ts';
 
 export interface CronTaskServiceTaskOptions {

@@ -1,5 +1,4 @@
-import type { GatewayIntentBits, Partials } from 'discord.js';
-import type { BaseService } from './lib/base/BaseService.ts';
+import type { BaseService } from './base/BaseService.ts';
 
 // Identity type: uses prototype to avoid construct-signature visibility checks.
 type ServiceClass<TService extends BaseService = BaseService> = {
@@ -11,26 +10,6 @@ type ServiceClass<TService extends BaseService = BaseService> = {
 type ServiceFactory<TService extends BaseService, TArgs extends unknown[]> = ServiceClass<TService> & {
   get(...args: TArgs): Promise<TService>;
 };
-
-export interface NativeServiceProviderOptions {
-  ledger: LedgerNativeServiceOptions | null;
-  discord: DiscordNativeServiceOptions | null;
-  task: true | null;
-}
-
-export interface LedgerNativeServiceOptions {
-  nativeId: string;
-  discordAccentMessage: string;
-  webhookId: string;
-  webhookToken: string;
-  threadId?: string;
-}
-
-export interface DiscordNativeServiceOptions {
-  token: string;
-  intents: [GatewayIntentBits];
-  partials: Partials[];
-}
 
 export class NativeServiceProvider {
   private static instance?: NativeServiceProvider;

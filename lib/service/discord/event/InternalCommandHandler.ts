@@ -1,17 +1,23 @@
 import uFuzzy from '@ufuzzy';
 import type { APIApplicationCommandOptionChoice, GuildTextBasedChannel } from 'discord.js';
-import { NativeServiceProvider } from '../../../../mod.provider.ts';
-import { isAutoCompleteHandler, isComponentHandler, isModalHandler } from '../../../base/BaseCommand.ts';
-import { Async } from '../../../util/Async.ts';
-import { ResponseBuilder } from '../../../util/baked/flow/ResponseBuilder.ts';
+import { Async } from '../../../baked/Async.ts';
+import { NativeServiceProvider } from '../../../provider/provider.ts';
+import { Permissions } from '../../../service/discord/baked/flow/Permissions.ts';
+import { ResponseBuilder } from '../../../service/discord/baked/flow/ResponseBuilder.ts';
 import { LedgerService } from '../../LedgerService.ts';
+import { isAutoCompleteHandler, isComponentHandler, isModalHandler } from '../base/BaseCommand.ts';
+import { CommandRegistrationService } from '../CommandRegistrationService.ts';
+import { DiscordService } from '../DiscordService.ts';
 
 export class InternalCommandHandler {
   // deno-lint-ignore require-await
   public static async initialize(): Promise<void> {
+    // Get Services
     const ledger = NativeServiceProvider.get().getProvider(LedgerService).instance();
-    const discord = NativeServiceProvider.get().getProvider(DiscordService).getDiscord();
+    const discord = NativeServiceProvider.get().getProvider(DiscordService).instance();
+    const crs = NativeServiceProvider.get().getProvider(CommandRegistrationService);
 
+    // Register Event
     discord.on(
       'interactionCreate',
       (interaction) => {
@@ -26,7 +32,7 @@ export class InternalCommandHandler {
               interaction.options.getSubcommandGroup(),
               interaction.options.getSubcommand(),
             ].filter((v) => v !== undefined && v !== null).join('.');
-            const registered = discord.crs.getRegistered(path);
+            const registered = crs.getRegistered(path);
             if (registered === null) {
               return;
             }
@@ -126,7 +132,7 @@ export class InternalCommandHandler {
               return;
             }
 
-            const ref = discord.crs.getRegisteredByReference(interaction.customId);
+            const ref = crs.getRegisteredByReference(interaction.customId);
             if (ref === null) {
               const awaitResponse = await Async.awaitable(
                 ResponseBuilder.respond(
@@ -176,7 +182,7 @@ export class InternalCommandHandler {
               return;
             }
 
-            const ref = discord.crs.getRegisteredByReference(interaction.customId);
+            const ref = crs.getRegisteredByReference(interaction.customId);
             if (ref === null) {
               const awaitResponse = await Async.awaitable(
                 ResponseBuilder.respond(
@@ -213,7 +219,7 @@ export class InternalCommandHandler {
               interaction.options.getSubcommandGroup(),
               interaction.options.getSubcommand(),
             ].filter((v) => v !== undefined && v !== null).join('.');
-            const registered = discord.crs.getRegistered(path);
+            const registered = crs.getRegistered(path);
             if (registered === null) {
               return;
             }

@@ -12,17 +12,17 @@
     // Libraries
     "ledger": "jsr:@ledger/ledger@0.3.7",
     "ledger/console-handler": "jsr:@ledger/console-handler@0.2.4",
-    "ledger/discord-slack-handler": "jsr:@ledger/discord-slack-handler@0.1.4",
-    "discord-emoji": "jsr:@amethyst/discord-emoji@2.5.3",
     "cron": "npm:cron@4.3.3",
     "@ufuzzy": "npm:@leeoniya/ufuzzy@1.0.19",
+    "discord-emoji": "jsr:@amethyst/discord-emoji@2.5.3",
     // Standard
     "@std/fs": "jsr:@std/fs@1.0.19",
     "@std/path": "jsr:@std/path@1.1.2",
     "@std/ulid": "jsr:@std/ulid@1.0.0"
   },
   "exports": {
-    ".": "./mod.types.ts"
+    ".": "./mod.base.ts",
+    "./discord": "./mod.discord.ts"
   },
   "nodeModulesDir": "none",
   // Compiler Options

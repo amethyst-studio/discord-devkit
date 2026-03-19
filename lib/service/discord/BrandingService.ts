@@ -1,4 +1,4 @@
-import { BaseService } from '../base/BaseService.ts';
+import { BaseService } from '../../provider/base/BaseService.ts';
 
 export const DEFAULT_BRANDING: Required<BrandingServiceOptions> = {
   brand: 'Official Companion Bot',

@@ -1,6 +1,6 @@
 import { ulid } from '@std/ulid';
-import { NativeServiceProvider } from '../../mod.provider.ts';
-import { BaseService } from '../base/BaseService.ts';
+import { BaseService } from '../provider/base/BaseService.ts';
+import { NativeServiceProvider } from '../provider/provider.ts';
 import { LedgerService } from './LedgerService.ts';
 
 export type MsTaskSchedulerOverrunPolicy = 'skip' | 'delay';
@@ -80,20 +80,17 @@ export class MsTaskScheduler extends BaseService {
         if (task.disposed) {
           continue;
         }
-        const hasIssues = task.failureCount > 0 || task.timeoutCount > 0 || task.overrunCount > 0;
+        const hasIssues = task.failureCount > 0 || task.timeoutCount > 0 || task.overrunCount > 10;
         if (hasIssues) {
-          const nsp = NativeServiceProvider.get();
-          if (nsp.hasProvider(LedgerService)) {
-            nsp.getProvider(LedgerService).instance().warning('MsTaskScheduler:TaskWatchdog', {
-              id: task.id,
-              name: task.name,
-              failureCount: task.failureCount,
-              timeoutCount: task.timeoutCount,
-              overrunCount: task.overrunCount,
-              runCount: task.runCount,
-              running: task.running,
-            });
-          }
+          NativeServiceProvider.get().getProvider(LedgerService).instance().warning('MsTaskScheduler:TaskWatchdog', {
+            id: task.id,
+            name: task.name,
+            failureCount: task.failureCount,
+            timeoutCount: task.timeoutCount,
+            overrunCount: task.overrunCount,
+            runCount: task.runCount,
+            running: task.running,
+          });
         }
       }
     }, { immediate: false });
@@ -149,18 +146,15 @@ export class MsTaskScheduler extends BaseService {
     };
 
     this.tasks.set(taskId, task);
-    const nsp = NativeServiceProvider.get();
-    if (nsp.hasProvider(LedgerService)) {
-      nsp.getProvider(LedgerService).instance().information('MsTaskScheduler:Register', {
-        id: task.id,
-        name: task.name,
-        intervalMs: task.intervalMs,
-        immediate: task.immediate,
-        overrunPolicy: task.overrunPolicy,
-        enabled: task.enabled,
-        maxRunTimeMs: task.maxRunTimeMs,
-      });
-    }
+    NativeServiceProvider.get().getProvider(LedgerService).instance().information('MsTaskScheduler:Register', {
+      id: task.id,
+      name: task.name,
+      intervalMs: task.intervalMs,
+      immediate: task.immediate,
+      overrunPolicy: task.overrunPolicy,
+      enabled: task.enabled,
+      maxRunTimeMs: task.maxRunTimeMs,
+    });
     this.schedule(task, task.nextRunMonotonicAt);
     return taskId;
   }
@@ -180,13 +174,10 @@ export class MsTaskScheduler extends BaseService {
     this.clearTimer(task);
     task.disposed = true;
     this.tasks.delete(taskId);
-    const nsp = NativeServiceProvider.get();
-    if (nsp.hasProvider(LedgerService)) {
-      nsp.getProvider(LedgerService).instance().information('MsTaskScheduler:Unregister', {
-        id: task.id,
-        name: task.name,
-      });
-    }
+    NativeServiceProvider.get().getProvider(LedgerService).instance().information('MsTaskScheduler:Unregister', {
+      id: task.id,
+      name: task.name,
+    });
     return true;
   }
 

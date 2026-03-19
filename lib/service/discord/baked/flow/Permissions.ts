@@ -1,5 +1,5 @@
 import type { ChatInputCommandInteraction, GuildTextBasedChannel, ModalSubmitInteraction, PermissionResolvable } from 'discord.js';
-import { Async } from '../../Async.ts';
+import { Async } from '../../../../baked/Async.ts';
 import { ResponseBuilder } from './ResponseBuilder.ts';
 
 export class Permissions {

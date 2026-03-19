@@ -1,6 +1,6 @@
 import type { ChatInputCommandBuilder, ChatInputCommandSubcommandGroupBuilder } from 'discord.js/builders';
-import type { BaseChatInputCommand } from '../../base/BaseCommand.ts';
-import { BaseService } from '../../base/BaseService.ts';
+import type { BaseChatInputCommand } from './base/BaseCommand.ts';
+import { BaseService } from '../../provider/base/BaseService.ts';
 
 /**
  * Service responsible for defining and registering Discord commands related to message management.
