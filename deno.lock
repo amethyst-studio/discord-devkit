@@ -7,11 +7,12 @@
     "jsr:@ledger/ledger@0.3.7": "0.3.7",
     "jsr:@std/datetime@0.225.7": "0.225.7",
     "jsr:@std/fmt@1.0.9": "1.0.9",
-    "jsr:@std/fs@1.0.19": "1.0.19",
-    "jsr:@std/internal@^1.0.10": "1.0.12",
-    "jsr:@std/internal@^1.0.9": "1.0.12",
-    "jsr:@std/path@1.1.2": "1.1.2",
-    "jsr:@std/path@^1.1.1": "1.1.2",
+    "jsr:@std/fs@1.0.23": "1.0.23",
+    "jsr:@std/internal@^1.0.12": "1.0.12",
+    "jsr:@std/json@^1.0.2": "1.0.3",
+    "jsr:@std/jsonc@1.0.2": "1.0.2",
+    "jsr:@std/path@1.1.4": "1.1.4",
+    "jsr:@std/path@^1.1.4": "1.1.4",
     "jsr:@std/ulid@1.0.0": "1.0.0",
     "npm:@discordjs/builders@dev": "2.0.0-dev.1773446773-2a067216c",
     "npm:@leeoniya/ufuzzy@1.0.19": "1.0.19",
@@ -47,20 +48,29 @@
     "@std/fmt@1.0.9": {
       "integrity": "2487343e8899fb2be5d0e3d35013e54477ada198854e52dd05ed0422eddcabe0"
     },
-    "@std/fs@1.0.19": {
-      "integrity": "051968c2b1eae4d2ea9f79a08a3845740ef6af10356aff43d3e2ef11ed09fb06",
+    "@std/fs@1.0.23": {
+      "integrity": "3ecbae4ce4fee03b180fa710caff36bb5adb66631c46a6460aaad49515565a37",
       "dependencies": [
-        "jsr:@std/internal@^1.0.9",
-        "jsr:@std/path@^1.1.1"
+        "jsr:@std/internal",
+        "jsr:@std/path@^1.1.4"
       ]
     },
     "@std/internal@1.0.12": {
       "integrity": "972a634fd5bc34b242024402972cd5143eac68d8dffaca5eaa4dba30ce17b027"
     },
-    "@std/path@1.1.2": {
-      "integrity": "c0b13b97dfe06546d5e16bf3966b1cadf92e1cc83e56ba5476ad8b498d9e3038",
+    "@std/json@1.0.3": {
+      "integrity": "97d5710996293a027b7aa5f0d1f4fa29f246f269e6b5597e08807613f37d426c"
+    },
+    "@std/jsonc@1.0.2": {
+      "integrity": "909605dae3af22bd75b1cbda8d64a32cf1fd2cf6efa3f9e224aba6d22c0f44c7",
       "dependencies": [
-        "jsr:@std/internal@^1.0.10"
+        "jsr:@std/json"
+      ]
+    },
+    "@std/path@1.1.4": {
+      "integrity": "1d2d43f39efb1b42f0b1882a25486647cb851481862dc7313390b2bb044314b5",
+      "dependencies": [
+        "jsr:@std/internal"
       ]
     },
     "@std/ulid@1.0.0": {
@@ -243,8 +253,9 @@
       "jsr:@amethyst/discord-emoji@2.5.3",
       "jsr:@ledger/console-handler@0.2.4",
       "jsr:@ledger/ledger@0.3.7",
-      "jsr:@std/fs@1.0.19",
-      "jsr:@std/path@1.1.2",
+      "jsr:@std/fs@1.0.23",
+      "jsr:@std/jsonc@1.0.2",
+      "jsr:@std/path@1.1.4",
       "jsr:@std/ulid@1.0.0",
       "npm:@discordjs/builders@dev",
       "npm:@leeoniya/ufuzzy@1.0.19",

@@ -16,9 +16,10 @@
     "@ufuzzy": "npm:@leeoniya/ufuzzy@1.0.19",
     "discord-emoji": "jsr:@amethyst/discord-emoji@2.5.3",
     // Standard
-    "@std/fs": "jsr:@std/fs@1.0.19",
-    "@std/path": "jsr:@std/path@1.1.2",
-    "@std/ulid": "jsr:@std/ulid@1.0.0"
+    "@std/fs": "jsr:@std/fs@1.0.23",
+    "@std/path": "jsr:@std/path@1.1.4",
+    "@std/ulid": "jsr:@std/ulid@1.0.0",
+    "@std/jsonc": "jsr:@std/jsonc@1.0.2"
   },
   "exports": {
     ".": "./mod.base.ts",
