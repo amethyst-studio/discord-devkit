@@ -24,7 +24,7 @@
     ".": "./mod.base.ts",
     "./discord": "./mod.discord.ts"
   },
-  "nodeModulesDir": "none",
+  "nodeModulesDir": "auto",
   // Compiler Options
   "compilerOptions": {
     "lib": [
@@ -101,5 +101,9 @@
     "trailingCommas": "onlyMultiLine",
     "useTabs": false,
     "useBraces": "always"
-  }
+  },
+  "allowScripts": [
+    "npm:bufferutil@4.1.0",
+    "npm:zlib-sync@0.1.10"
+  ]
 }

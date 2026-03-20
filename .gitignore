@@ -1,6 +1,4 @@
 .env
 !.env.template
 
-# DOCMD
-
-docmd/site
+node_modules/

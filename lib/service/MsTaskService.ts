@@ -46,7 +46,7 @@ type MsTaskSchedulerTask = MsTaskSchedulerTaskSnapshot & {
 };
 
 /**
- * MsTaskScheduler is a high-precision millisecond-based task scheduler for executing tasks at regular intervals. It provides fine-grained control over task timing, overrun handling, and execution monitoring. The service uses a monotonic clock for timing accuracy and automatically monitors task health through a built-in watchdog.
+ * MsTaskervice is a high-precision millisecond-based task scheduler for executing tasks at regular intervals. It provides fine-grained control over task timing, overrun handling, and execution monitoring. The service uses a monotonic clock for timing accuracy and automatically monitors task health through a built-in watchdog.
  *
  * Key features:
  * - Millisecond-level precision with adaptive polling (down to 1ms)
@@ -55,7 +55,7 @@ type MsTaskSchedulerTask = MsTaskSchedulerTaskSnapshot & {
  * - Built-in watchdog monitoring for task failures, timeouts, and overruns
  * - Monotonic clock-based scheduling with wall-clock time reporting
  */
-export class MsTaskScheduler extends BaseService {
+export class MsTaskService extends BaseService {
   private static readonly PRECISION_WINDOW_MS = 4;
   private static readonly PRECISION_POLL_MS = 1;
 
@@ -67,8 +67,8 @@ export class MsTaskScheduler extends BaseService {
     super();
   }
 
-  public static override get(): Promise<MsTaskScheduler> {
-    return super.get() as Promise<MsTaskScheduler>;
+  public static override get(): Promise<MsTaskService> {
+    return super.get() as Promise<MsTaskService>;
   }
 
   /**
@@ -259,16 +259,16 @@ export class MsTaskScheduler extends BaseService {
       return;
     }
 
-    if (remainingMs > MsTaskScheduler.PRECISION_WINDOW_MS) {
+    if (remainingMs > MsTaskService.PRECISION_WINDOW_MS) {
       task.timer = setTimeout(() => {
         this.armTimer(task);
-      }, Math.max(1, Math.floor(remainingMs - MsTaskScheduler.PRECISION_WINDOW_MS)));
+      }, Math.max(1, Math.floor(remainingMs - MsTaskService.PRECISION_WINDOW_MS)));
       return;
     }
 
     task.timer = setTimeout(() => {
       this.armTimer(task);
-    }, Math.min(MsTaskScheduler.PRECISION_POLL_MS, remainingMs));
+    }, Math.min(MsTaskService.PRECISION_POLL_MS, remainingMs));
   }
 
   private async execute(taskId: string): Promise<void> {
