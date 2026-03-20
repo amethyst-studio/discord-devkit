@@ -1,4 +1,3 @@
-import { parse } from '@std/jsonc';
 import { Ledger } from 'ledger';
 import { Level } from 'ledger/struct';
 import { BaseService } from '../provider/base/BaseService.ts';
@@ -36,14 +35,11 @@ export class LedgerService extends BaseService {
    */
   protected override async initialize(): Promise<void> {
     // Load Default Console Handler Built-in Version
-    const getRuntimeConsoleRegister = await Deno.readTextFile(new URL('../../deno.jsonc', import.meta.url));
-    const parsed = parse(getRuntimeConsoleRegister) as { imports: Record<string, string> };
-    const runtimeConsoleRegister = parsed.imports['ledger/console-handler'];
-    await import(runtimeConsoleRegister);
+    await import('ledger/console-handler');
 
     // Register to Ledger
     this.ledger.register({
-      definition: runtimeConsoleRegister,
+      definition: 'ledger/console-handler',
       level: Level.TRACE,
     });
 
