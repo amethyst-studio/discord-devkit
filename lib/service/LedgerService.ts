@@ -35,11 +35,11 @@ export class LedgerService extends BaseService {
    */
   protected override async initialize(): Promise<void> {
     // Load Default Console Handler Built-in Version
-    await import('ledger/console-handler');
+    await import('jsr:@ledger/console-handler@0.2.4');
 
     // Register to Ledger
     this.ledger.register({
-      definition: 'ledger/console-handler',
+      definition: 'jsr:@ledger/console-handler@0.2.4',
       level: Level.TRACE,
     });
 

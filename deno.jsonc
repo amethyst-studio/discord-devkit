@@ -11,7 +11,7 @@
     "bufferutil": "npm:bufferutil",
     // Libraries
     "ledger": "jsr:@ledger/ledger@0.3.7",
-    "ledger/console-handler": "jsr:@ledger/console-handler@0.2.4",
+    "also-inline-ledger/console-handler": "jsr:@ledger/console-handler@0.2.4",
     "cron": "npm:cron@4.3.3",
     "@ufuzzy": "npm:@leeoniya/ufuzzy@1.0.19",
     "discord-emoji": "jsr:@amethyst/discord-emoji@2.5.3",
