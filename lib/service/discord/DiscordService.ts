@@ -5,6 +5,7 @@ import { NativeServiceProvider } from '../../provider/provider.ts';
 import { LedgerService } from '../LedgerService.ts';
 import { BrandingService, type BrandingServiceOptions } from './BrandingService.ts';
 import { CommandRegistrationService } from './CommandRegistrationService.ts';
+import { InternalCommandHandler } from './event/InternalCommandHandler.ts';
 
 export interface DiscordNativeServiceOptions {
   token: string;
@@ -82,6 +83,8 @@ export class DiscordService extends BaseService {
         }
       },
     );
+
+    await InternalCommandHandler.initialize();
   }
 
   /**
