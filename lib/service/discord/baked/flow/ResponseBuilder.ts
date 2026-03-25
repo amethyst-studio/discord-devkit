@@ -13,8 +13,6 @@ export type ResponseBuilderSetupOptions = {
 };
 
 export class ResponseBuilder {
-  private static readonly branding = NativeServiceProvider.get().getProvider(BrandingService);
-
   public static basic(packet: {
     title?: string;
     message?: string | (string | null)[];
@@ -27,6 +25,7 @@ export class ResponseBuilder {
     callback?: (builder: ContainerBuilder) => void;
     interaction?: ChatInputCommandInteraction | MessageComponentInteraction | ModalSubmitInteraction;
   }): InteractionReplyOptions | InteractionEditReplyOptions | InteractionUpdateOptions {
+    const branding = NativeServiceProvider.get().getProvider(BrandingService);
     const builder = new ContainerBuilder();
 
     // Auto Format Message
@@ -80,10 +79,10 @@ export class ResponseBuilder {
         packet.footer.format = packet.footer.format.replace(`{{${key}}}`, value);
       }
       packet.footer.format = packet.footer.format.replace('{{TIMESTAMP}}', `<t:${Math.floor(Date.now() / 1000)}:F>`);
-      packet.footer.format = packet.footer.format.replace('{{INT_BRAND}}', packet?.interaction?.guild?.name ?? this.branding?.brand ?? DEFAULT_BRANDING.brand);
-      packet.footer.format = packet.footer.format.replace('{{INT_STUB}}', this.branding?.stub ?? DEFAULT_BRANDING.stub);
-      packet.footer.format = packet.footer.format.replace('{{INT_LINK}}', this.branding?.link ?? DEFAULT_BRANDING.link);
-      packet.footer.format = packet.footer.format.replace('{{INT_REF}}', this.branding?.ref ?? DEFAULT_BRANDING.ref);
+      packet.footer.format = packet.footer.format.replace('{{INT_BRAND}}', packet?.interaction?.guild?.name ?? branding?.brand ?? DEFAULT_BRANDING.brand);
+      packet.footer.format = packet.footer.format.replace('{{INT_STUB}}', branding?.stub ?? DEFAULT_BRANDING.stub);
+      packet.footer.format = packet.footer.format.replace('{{INT_LINK}}', branding?.link ?? DEFAULT_BRANDING.link);
+      packet.footer.format = packet.footer.format.replace('{{INT_REF}}', branding?.ref ?? DEFAULT_BRANDING.ref);
       builder
         .addTextDisplayComponents((b) => b.setContent(`${(packet.footer!.format as string).split('\n').map((line) => `-# ${line.trim()}`).join('\n')}`));
     }
@@ -145,6 +144,7 @@ export class ResponseBuilder {
     cause: Error;
     interaction?: ChatInputCommandInteraction | MessageComponentInteraction | ModalSubmitInteraction;
   }): InteractionReplyOptions | InteractionEditReplyOptions | InteractionUpdateOptions {
+    const branding = NativeServiceProvider.get().getProvider(BrandingService);
     const builder = new ContainerBuilder();
 
     // Auto Format Message
@@ -190,10 +190,10 @@ export class ResponseBuilder {
         packet.footer.format = packet.footer.format.replace(`{{${key}}}`, value);
       }
       packet.footer.format = packet.footer.format.replace('{{TIMESTAMP}}', `<t:${Math.floor(Date.now() / 1000)}:F>`);
-      packet.footer.format = packet.footer.format.replace('{{INT_BRAND}}', packet?.interaction?.guild?.name ?? this.branding?.brand ?? DEFAULT_BRANDING.brand);
-      packet.footer.format = packet.footer.format.replace('{{INT_STUB}}', this.branding?.stub ?? DEFAULT_BRANDING.stub);
-      packet.footer.format = packet.footer.format.replace('{{INT_LINK}}', this.branding?.link ?? DEFAULT_BRANDING.link);
-      packet.footer.format = packet.footer.format.replace('{{INT_REF}}', this.branding?.ref ?? DEFAULT_BRANDING.ref);
+      packet.footer.format = packet.footer.format.replace('{{INT_BRAND}}', packet?.interaction?.guild?.name ?? branding?.brand ?? DEFAULT_BRANDING.brand);
+      packet.footer.format = packet.footer.format.replace('{{INT_STUB}}', branding?.stub ?? DEFAULT_BRANDING.stub);
+      packet.footer.format = packet.footer.format.replace('{{INT_LINK}}', branding?.link ?? DEFAULT_BRANDING.link);
+      packet.footer.format = packet.footer.format.replace('{{INT_REF}}', branding?.ref ?? DEFAULT_BRANDING.ref);
       builder
         .addTextDisplayComponents((b) => b.setContent(`${(packet.footer!.format as string).split('\n').map((line) => `-# ${line.trim()}`).join('\n')}`));
     }
