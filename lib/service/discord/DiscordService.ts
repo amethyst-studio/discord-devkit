@@ -55,6 +55,9 @@ export class DiscordService extends BaseService {
     const ledger = NativeServiceProvider.get().getProvider(LedgerService).instance();
     const crs = NativeServiceProvider.get().getProvider(CommandRegistrationService);
 
+    // Register ICH
+    await InternalCommandHandler.initialize(this.client);
+
     // Internal Ready Event
     this.client.once(
       'clientReady',
@@ -83,8 +86,6 @@ export class DiscordService extends BaseService {
         }
       },
     );
-
-    await InternalCommandHandler.initialize();
   }
 
   /**

@@ -1,5 +1,5 @@
 import uFuzzy from '@ufuzzy';
-import type { APIApplicationCommandOptionChoice, GuildTextBasedChannel } from 'discord.js';
+import type { APIApplicationCommandOptionChoice, Client, GuildTextBasedChannel } from 'discord.js';
 import { Async } from '../../../baked/Async.ts';
 import { NativeServiceProvider } from '../../../provider/provider.ts';
 import { Permissions } from '../../../service/discord/baked/flow/Permissions.ts';
@@ -7,14 +7,12 @@ import { ResponseBuilder } from '../../../service/discord/baked/flow/ResponseBui
 import { LedgerService } from '../../LedgerService.ts';
 import { isAutoCompleteHandler, isComponentHandler, isModalHandler } from '../base/BaseCommand.ts';
 import { CommandRegistrationService } from '../CommandRegistrationService.ts';
-import { DiscordService } from '../DiscordService.ts';
 
 export class InternalCommandHandler {
   // deno-lint-ignore require-await
-  public static async initialize(): Promise<void> {
+  public static async initialize(discord: Client): Promise<void> {
     // Get Services
     const ledger = NativeServiceProvider.get().getProvider(LedgerService).instance();
-    const discord = NativeServiceProvider.get().getProvider(DiscordService).instance();
     const crs = NativeServiceProvider.get().getProvider(CommandRegistrationService);
 
     // Register Event
