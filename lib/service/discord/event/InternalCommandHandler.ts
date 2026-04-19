@@ -112,6 +112,11 @@ export class InternalCommandHandler {
           }
 
           if (interaction.isMessageComponent()) {
+            // Allow using a "+" to bypass the Internal Handler.
+            if (interaction.customId?.startsWith('+')) {
+              return;
+            }
+
             if (interaction.customId === null || interaction.customId.length === 0) {
               const awaitResponse = await Async.awaitable(
                 ResponseBuilder.respond(

@@ -44,13 +44,10 @@
         "extensions.ignoreRecommendations": true,
         "github.copilot.chat.reviewSelection.instructions": [
           {
-            "text": "This dev container includes an up-to-date version of Git, built from source as needed, pre-installed and available on the `PATH`."
+            "text": "This DevContainer includes an up-to-date version of Git, built from source as needed, pre-installed and available on the `PATH`."
           },
           {
-            "text": "This dev container includes `deno` pre-installed and available on the `PATH` for Deno/TypeScript development. Do not use Node.js."
-          },
-          {
-            "text": "This workspace is in a dev container running on \"Debian GNU/Linux 12 (bookworm)\". Some of the command line tools available on the `PATH`: `apt`, `dpkg`, `git`, `curl`, `wget`, `ssh`, `scp`, `rsync`, `gpg`, `ps`, `lsof`, `netstat`, `top`, `tree`, `find`, `grep`, `zip`, `unzip`, `tar`, `gzip`, `bzip2`, `xz`"
+            "text": "This DevContainer includes `deno` pre-installed and available on the `PATH` for Deno/TypeScript development. Do not use Node.js."
           }
         ]
       },
@@ -71,7 +68,6 @@
   "containerUser": "root",
   "postStartCommand": {
     "safe": "git config --global --add safe.directory ${containerWorkspaceFolder}",
-    "deps_install": "deno install",
-    "docmd": "npm install -g @docmd/core"
+    "deps_install": "deno install"
   }
 }
