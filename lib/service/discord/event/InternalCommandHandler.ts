@@ -5,7 +5,7 @@ import { NativeServiceProvider } from '../../../provider/provider.ts';
 import { Permissions } from '../../../service/discord/baked/flow/Permissions.ts';
 import { ResponseBuilder } from '../../../service/discord/baked/flow/ResponseBuilder.ts';
 import { LedgerService } from '../../LedgerService.ts';
-import { isAutoCompleteHandler, isComponentHandler, isModalHandler } from '../base/BaseCommand.ts';
+import { isAutoCompleteHandler } from '../base/BaseCommand.ts';
 import { CommandRegistrationService } from '../CommandRegistrationService.ts';
 
 export class InternalCommandHandler {
@@ -108,116 +108,6 @@ export class InternalCommandHandler {
                 path,
                 err: awaitExecute.err,
               });
-            }
-          }
-
-          if (interaction.isMessageComponent()) {
-            // Allow using a "+" to bypass the Internal Handler.
-            if (interaction.customId?.startsWith('+')) {
-              return;
-            }
-
-            if (interaction.customId === null || interaction.customId.length === 0) {
-              const awaitResponse = await Async.awaitable(
-                ResponseBuilder.respond(
-                  interaction,
-                  ResponseBuilder.basic({
-                    title: 'Invalid Interaction Callback ID',
-                    message: 'The Callback ID is missing or invalid. Please report an issue if this persists.',
-                  }),
-                ),
-              );
-              if (Async.isAwaitableException(awaitResponse)) {
-                ledger.warning('Failed to send invalid interaction callback id response', {
-                  err: awaitResponse.err,
-                });
-              }
-              return;
-            }
-
-            const ref = crs.getRegisteredByReference(interaction.customId);
-            if (ref === null) {
-              const awaitResponse = await Async.awaitable(
-                ResponseBuilder.respond(
-                  interaction,
-                  ResponseBuilder.basic({
-                    title: 'Interaction Reference Not Found',
-                    message: 'The interaction reference could not be found. It may have expired or is missing. Please execute the original request and try again. Report an issue if this persists over multiple attempts.',
-                  }),
-                ),
-              );
-              if (Async.isAwaitableException(awaitResponse)) {
-                ledger.warning('Failed to send message component reference not found response', {
-                  err: awaitResponse.err,
-                });
-              }
-              return;
-            }
-
-            if (isComponentHandler(ref)) {
-              const awaitComponent = await Async.awaitable(
-                ref.component(interaction),
-              );
-              if (Async.isAwaitableException(awaitComponent)) {
-                ledger.severe('Failed to Process interactionCreate for MessageComponent', {
-                  err: awaitComponent.err,
-                });
-              }
-            }
-          }
-
-          if (interaction.isModalSubmit()) {
-                        // Allow using a "+" to bypass the Internal Handler.
-            if (interaction.customId?.startsWith('+')) {
-              return;
-            }
-            
-            if (interaction.customId === null || interaction.customId.length === 0) {
-              const awaitResponse = await Async.awaitable(
-                ResponseBuilder.respond(
-                  interaction,
-                  ResponseBuilder.basic({
-                    title: 'Invalid Interaction Custom ID',
-                    message: 'The interaction custom ID was missing or invalid. The execution context has been halted.',
-                  }),
-                ),
-              );
-              if (Async.isAwaitableException(awaitResponse)) {
-                ledger.warning('Failed to send invalid interaction custom id response', {
-                  err: awaitResponse.err,
-                });
-              }
-              return;
-            }
-
-            const ref = crs.getRegisteredByReference(interaction.customId);
-            if (ref === null) {
-              const awaitResponse = await Async.awaitable(
-                ResponseBuilder.respond(
-                  interaction,
-                  ResponseBuilder.basic({
-                    title: 'Interaction Reference Not Found',
-                    message: 'The interaction reference could not be found. It may have expired or is missing. Please execute the original request and try again. Report an issue if this persists over multiple attempts.',
-                  }),
-                ),
-              );
-              if (Async.isAwaitableException(awaitResponse)) {
-                ledger.warning('Failed to send modal reference not found response', {
-                  err: awaitResponse.err,
-                });
-              }
-              return;
-            }
-
-            if (isModalHandler(ref)) {
-              const awaitModal = await Async.awaitable(
-                ref.modal(interaction),
-              );
-              if (Async.isAwaitableException(awaitModal)) {
-                ledger.severe('Failed to Process interactionCreate for ModalSubmit', {
-                  err: awaitModal.err,
-                });
-              }
             }
           }
 

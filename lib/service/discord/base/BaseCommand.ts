@@ -176,14 +176,6 @@ export abstract class BaseChatInputCommand {
   public abstract execute(interaction: ChatInputCommandInteraction): Promise<void>;
 }
 
-export interface ComponentHandler {
-  component(interaction: MessageComponentInteraction): Promise<void>;
-}
-
-export interface ModalHandler {
-  modal(interaction: ModalSubmitInteraction): Promise<void>;
-}
-
 export interface AutoCompleteResponse {
   results: APIApplicationCommandOptionChoice[];
   perPage?: number;
@@ -192,16 +184,6 @@ export interface AutoCompleteResponse {
 
 export interface AutoCompleteHandler {
   autocomplete(interaction: AutocompleteInteraction): Promise<AutoCompleteResponse>;
-}
-
-export function isComponentHandler(command: BaseChatInputCommand): command is BaseChatInputCommand & ComponentHandler {
-  // deno-lint-ignore no-explicit-any
-  return 'component' in command && typeof (command as any).component === 'function';
-}
-
-export function isModalHandler(command: BaseChatInputCommand): command is BaseChatInputCommand & ModalHandler {
-  // deno-lint-ignore no-explicit-any
-  return 'modal' in command && typeof (command as any).modal === 'function';
 }
 
 export function isAutoCompleteHandler(command: BaseChatInputCommand): command is BaseChatInputCommand & AutoCompleteHandler {

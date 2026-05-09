@@ -1,0 +1,19 @@
+{
+  "features": {
+    "ghcr.io/devcontainers-extra/features/deno:1": {
+      "version": "1.0.4",
+      "resolved": "ghcr.io/devcontainers-extra/features/deno@sha256:7013bf7726828a33579604fe1aa5c36a253b578d5991e55800b418b56fd2cca5",
+      "integrity": "sha256:7013bf7726828a33579604fe1aa5c36a253b578d5991e55800b418b56fd2cca5"
+    },
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "1.7.1",
+      "resolved": "ghcr.io/devcontainers/features/node@sha256:8c0de46939b61958041700ee89e3493f3b2e4131a06dc46b4d9423427d06e5f6",
+      "integrity": "sha256:8c0de46939b61958041700ee89e3493f3b2e4131a06dc46b4d9423427d06e5f6"
+    },
+    "ghcr.io/flexwie/devcontainer-features/op:1": {
+      "version": "1.0.0",
+      "resolved": "ghcr.io/flexwie/devcontainer-features/op@sha256:68098ff0ac2447bcf0eeee7ac19123bd0375fd43330ee3c9ca4dee510b74c6d3",
+      "integrity": "sha256:68098ff0ac2447bcf0eeee7ac19123bd0375fd43330ee3c9ca4dee510b74c6d3"
+    }
+  }
+}
