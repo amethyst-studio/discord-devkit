@@ -44,7 +44,7 @@ export class CronTaskService extends BaseService {
           });
         }
       }
-    });
+    }, true);
   }
 
   /**
