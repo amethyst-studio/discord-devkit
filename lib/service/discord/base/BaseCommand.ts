@@ -180,6 +180,7 @@ export interface AutoCompleteResponse {
   results: APIApplicationCommandOptionChoice[];
   perPage?: number;
   allowEmptySearch?: boolean;
+  bypassHaystackTrimming?: boolean;
 }
 
 export interface AutoCompleteHandler {

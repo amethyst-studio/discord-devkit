@@ -5,7 +5,7 @@ import { NativeServiceProvider } from '../../../provider/provider.ts';
 import { Permissions } from '../../../service/discord/baked/flow/Permissions.ts';
 import { ResponseBuilder } from '../../../service/discord/baked/flow/ResponseBuilder.ts';
 import { LedgerService } from '../../LedgerService.ts';
-import { isAutoCompleteHandler } from '../base/BaseCommand.ts';
+import { AutoCompleteResponse, isAutoCompleteHandler } from '../base/BaseCommand.ts';
 import { CommandRegistrationService } from '../CommandRegistrationService.ts';
 
 export class InternalCommandHandler {
@@ -279,9 +279,3 @@ export class InternalCommandHandler {
   }
 }
 
-export type AutoCompleteResponse = {
-  results: APIApplicationCommandOptionChoice[];
-  perPage?: number;
-  allowEmptySearch?: boolean;
-  bypassHaystackTrimming?: boolean;
-};
