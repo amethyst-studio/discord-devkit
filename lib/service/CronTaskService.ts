@@ -56,7 +56,7 @@ export class CronTaskService extends BaseService {
    * @param waitForCompletion - Whether the task should wait for completion before scheduling the next run (default: true).
    * @param options - Optional configuration for the task, such as maxRunTimeMs for timeout.
    */
-  public register(name: string, cronTime: string, callback: () => Promise<void> | void, waitForCompletion = true, options?: CronTaskServiceTaskOptions): void {
+  public register(name: string, cronTime: string, callback: () => Promise<void> | void, waitForCompletion: boolean, options?: CronTaskServiceTaskOptions): void {
     const taskId = ulid();
     const taskRecord = { name, job: null as unknown as CronJob, timeoutCount: 0 };
     this.taskLastExecuted.set(taskId, Date.now());

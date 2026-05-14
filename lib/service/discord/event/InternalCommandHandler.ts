@@ -126,6 +126,7 @@ export class InternalCommandHandler {
               results: [],
               allowEmptySearch: true,
               perPage: 10,
+              bypassHaystackTrimming: false,
             };
             if (isAutoCompleteHandler(registered)) {
               const awaitAutocomplete = await Async.awaitable(
@@ -188,7 +189,10 @@ export class InternalCommandHandler {
             const choices: APIApplicationCommandOptionChoice[] = [];
 
             // Perform fuzzy search and respond with filtered choices.
-            if (needle === '' && acr.allowEmptySearch) {
+            if ((needle === '') && acr.allowEmptySearch) {
+              choices.push(...acr.results);
+            }
+            else if (acr.bypassHaystackTrimming) {
               choices.push(...acr.results);
             }
             else {
@@ -279,4 +283,5 @@ export type AutoCompleteResponse = {
   results: APIApplicationCommandOptionChoice[];
   perPage?: number;
   allowEmptySearch?: boolean;
+  bypassHaystackTrimming?: boolean;
 };
